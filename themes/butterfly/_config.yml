@@ -269,7 +269,7 @@ aside:
 # busuanzi count for PV / UV in site
 # 訪問人數
 busuanzi:
-  site_uv: false
+  site_uv: true
   site_pv: true
   page_pv: true
 
@@ -446,8 +446,8 @@ gitalk:
 # valine
 # https://valine.js.org
 valine:
-  appId: # leancloud application app id
-  appKey: # leancloud application app key
+  appId: OEq3iszm4hiLRFQ80CCuoT2B-gzGzoHsz # leancloud application app id
+  appKey: E2tu5GKsWgzxBtHDe0SXDcYC # leancloud application app key
   avatar: monsterid # gravatar style https://valine.js.org/#/avatar
   serverURLs: # This configuration is suitable for domestic custom domain name users, overseas version will be automatically detected (no need to manually fill in)
   bg: # valine background

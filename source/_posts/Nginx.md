@@ -137,22 +137,19 @@ http {
 ```
 
 # 4、反向代理实现
-实现效果：使用 Nginx 反向代理，访问www.123.com直接跳转到127.0.0.1:8080
-> 注意：此处如果要想从www.123.com跳转到本机指定的ip，需要修改本机的hosts文件。此处略过
+实现效果：输入 http://www.test.com, 自动跳转到百度首页
+
 
 ```shell
 server {
-  #	监听端口80 即当访问服务器的端口是80时，进入这个server块处理
-	listen       80;
-  # server_name当配置了listen时不起作用 
-	server_name  xxx;
-  # location后面代表访问路径 当是/ 请求时 代理到的地址
-	location / {
-		root   html;
-		index  index.html index.htm;
-    # 使用 proxy_pass（固定写法）后面跟要代理服务器地址 
-		proxy_pass  http://127.0.0.1:8080
-	}
+         listen          80;
+         server_name     www.test.com;  #你的域名
+         location / {
+               proxy_pass          http://www.baidu.com/;  #需要反代的域名
+               proxy_redirect      off;
+               proxy_set_header    X-Real-IP      $remote_addr;
+               proxy_set_header    X-Forwarded-For $proxy_add_x_forwarded_for;
+        }
 }
 
 ```
