@@ -6,6 +6,7 @@ categories:
 tags:
   - RabbitMQ
   - 消息队列
+  - 编程基础
 abbrlink: 33708
 ---
 # 1、基本基础
@@ -66,7 +67,7 @@ MQ全称Message Queue（消息队列），是在消息传输过程中保存消�
 6. 访问 [http://127.0.0.1:15672/](http://127.0.0.1:15672/)      guest guest
 
 
-# 2、mq相关概念
+# 2、组件
 ## 2.1、RabbitMQ架构
 ![RabbitMQ架构](https://yancey-note-img.oss-cn-beijing.aliyuncs.com/202307241048618.png)
 
@@ -341,251 +342,90 @@ public class Producer {
 ![image.png](https://cdn.nlark.com/yuque/0/2022/png/2996398/1661473083570-947e0de2-9c97-47fb-8fba-4e568d152f28.png#averageHue=%23353330&clientId=u1f2092d6-850c-4&from=paste&height=129&id=u8c943953&originHeight=129&originWidth=335&originalType=binary&ratio=1&rotation=0&showTitle=false&size=16674&status=done&style=none&taskId=uc8eec929-83ad-43c6-bda3-fb8dbe96e14&title=&width=335)
 
 
+# 3、高级特性
 
-## 2.4、死信队列
-“死信”是RabbitMQ中的一种消息机制，当你在消费消息时，如果队列里的消息出现以下情况：
-（1）消息被否定确认，使用 channel.basicNack 或 channel.basicReject ，并且此时requeue =false
-（2）消息在队列的存活时间超过设置的生存时间（TTL)时间。
-（3）消息队列的消息数量已经超过最大队列长度。那么该消息将成为“死信”
-“死信”消息会被RabbitMQ进行特殊处理，如果配置了死信队列信息，那么该消息将会被丢进死信队列中，如果没有配置，则该消息将会被丢弃
-```java
-//  业务队列配置死信队列参数（声明业务队列A）
-    @Bean("businessQueueA")
-    public Queue businessQueueA(){
-        Map<String, Object> args = new HashMap<>(2);
-//       x-dead-letter-exchange    这里声明当前队列绑定的死信交换机
-        args.put("x-dead-letter-exchange", DEAD_LETTER_EXCHANGE);
-//       x-dead-letter-routing-key  这里声明当前队列的死信路由key
-        args.put("x-dead-letter-routing-key", DEAD_LETTER_QUEUEA_ROUTING_KEY);
-        return QueueBuilder.durable(BUSINESS_QUEUEA_NAME).withArguments(args).build();
-    }
-//  声明业务队列绑定关系
-
-    // 声明业务队列A绑定关系
-    @Bean
-    public Binding businessBindingA(@Qualifier("businessQueueA") Queue queue,
-                                    @Qualifier("businessExchange") FanoutExchange exchange){
-        return BindingBuilder.bind(queue).to(exchange);
-    }
-```
-### 2.4.1、实现方式
-
-1. 交换机，队列配置
-```java
-@Configuration
-public class RabbitConfig {
-	/**
-     * 声明死信交换机
-     */
-    @Bean
-    public DirectExchange dlxExchange() {
-        return new DirectExchange("dlxExchange");
-    }
-    /**
-     * 声明死信队列
-     */
-    @Bean
-    public Queue dlxQueue() {
-        return new Queue("dlxQueue");
-    }
-    /**
-     * 绑定死信队列到死信交换机
-     */
-    @Bean
-    public Binding binding() {
-        return BindingBuilder.bind(dlxQueue())
-                .to(dlxExchange())
-                .with("dlxRoutingKey");
-    }
-
-    /**
-     * 普通队列绑定死信即可
-     */
-    @Bean
-    Queue normalQueue(){
-        Map<String,Object> map = new HashMap<>();
-        map.put("x-dead-letter-exchange","dlxExchange");
-        map.put("x-dead-letter-routing-key", "dlxRoutingKey");
-        return new Queue("normalQueue",true,false,false,map);
-    }
-
-    @Bean
-    DirectExchange normalExchange(){
-        return new DirectExchange("normalExchange");
-    }
-
-    @Bean
-    Binding normalBindingExchange(){
-        return BindingBuilder.bind( normalQueue()).to(normalExchange()).with("normalRoutingKey");
-    }
-}
-```
-
-2. 生产者和消费者（过期进入死信队列）
-```java
-@RestController
-public class Producer {
-    @Autowired
-    AmqpTemplate amqpTemplate;
-
-    @RequestMapping("/send")
-    public String send() {
-        String content = "hello,rabbitmq";
-        // 设置消息过期时间为3s
-        amqpTemplate.convertAndSend("normalExchange", "normalRoutingKey", content,message -> {
-            message.getMessageProperties().setExpiration("3000");
-            return message;
-        });
-        return content;
-    }
-}
-
-@Component
-public class Consumer1 {
-    // 将正常消费者注掉，过期后进入死信队列
-//    @RabbitListener(queues = "normalQueue")
-//    public void getMsg(String msg, Channel channel, Message message) throws IOException {
-//        System.out.println("正常队列收到消息时间为:"+LocalDateTime.now()+",收到的消息内容为:"+ msg);
-//        channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
-//    }
-
-@RabbitListener(queues = "dlxQueue")
-public void myDealy(String msg, Message message, Channel channel) throws IOException {
-    System.out.println("死信收到消息时间为:"+LocalDateTime.now()+",收到的消息内容为:"+ msg);
-    channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
-}
-}
-```
-
-3. 方式2，手动拒绝进入死信队列
-```java
-// 生产者正常发消息
-@RestController
-public class Producer {
-    @Autowired
-    AmqpTemplate amqpTemplate;
-
-    @RequestMapping("/send")
-    public String send() {
-        String content = "hello,rabbitmq";
-        // 设置消息过期时间为3s
-        amqpTemplate.convertAndSend("normalExchange", "normalRoutingKey", content);
-        return content;
-    }
-}
-
-@Component
-public class Consumer1 {
-    // 正常队列拒绝消息basicNack，并且第三个参数requeue设置为false，禁止重新入队
-    @RabbitListener(queues = "normalQueue")
-    public void getMsg(String msg, Channel channel, Message message) throws IOException {
-        System.out.println("正常队列收到消息时间为:"+LocalDateTime.now()+",收到的消息内容为:"+ msg);
-        channel.basicNack(message.getMessageProperties().getDeliveryTag(), false,false);
-    }
-
-    @RabbitListener(queues = "dlxQueue")
-    public void myDealy(String msg, Message message, Channel channel) throws IOException {
-        System.out.println("死信收到消息时间为:"+LocalDateTime.now()+",收到的消息内容为:"+ msg);
-        channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
-    }
-}
-
-```
 ## 3.1、保证消息传递的可靠性
-RabbitMQ保证消息的可靠性主要分为两个部分：消息投递和消息确认。
-投递可靠性：**confirm确认模式**（producer——>exchange）和**return退回模式**（exchange——>queue）
-消息确认：ack消费者确认，表示消费者收到消息后的确认方式
+RabbitMQ保证消息的可靠性主要分为两个部分：消息投递和消费者消息确认
+（1）投递确认：**confirm确认模式**（producer——>exchange），**return退回模式**（exchange——>queue）
+（2）消费者确认：ACK消息签收机制，表示消费者收到消息后的确认方式
+
 ### 3.1.1、confirm确认模式
 消息从 producer 到 rabbitmq broker有一个 confirmCallback 确认模式。(无论成功失败都有返回)
 
-1. 在配置文件中开启消息确认模式
-```java
-# SIMPLE       禁用发布确认模式，是默认值
-# CORRELATED   发布消息成功到交换器或失败后 会触发回调方法
-# NONE         有两种效果，其一效果和CORRELATED值一样会触发回调方法，其二在发布消息成功后使用 
-               rabbitTemplate调用waitForConfirms或waitForConfirmsOrDie方法等待broker节点返回 
-               发送结果，根据返回结果来判定下一步的逻辑，要注意的点是waitForConfirmsOrDie方法如果 
-               返回false则会关闭channel，则接下来无法发送消息到broker;
- 
-spring.rabbitmq.publisher-confirm-type=CORRELATED
-```
 
-2.  通过实现 RabbitTemplate.ConfirmCallback 类来对消息发送结果进行处理
-```java
-@Component
-public class RabbitConfirmConfig implements RabbitTemplate.ConfirmCallback {
-    @Override
-    public void confirm(CorrelationData correlationData, boolean ack, String cause) {
- 
-        if (!ack) {
-            # 根据具体的业务进行相应的处理
-            System.out.println("【交换机】 生产者消息确认失败了====" + cause);
-        } else {
-            System.out.println("【交换机】 生产者消息确认成功====");
-        }
-    }
-}
-```
-
-3. 对rabbitTemplate进行设置
-```java
-@Configuration
-public class RabbitConfig {
- 
-    @Autowired
-    private RabbitConfirmConfig rabbitConfirmConfig;
- 
-    @Autowired
-    private RabbitTemplate rabbitTemplate;
- 
-    @PostConstruct
-    public void initRabbitTemplate(){    
-        rabbitTemplate.setConfirmCallback(rabbitConfirmConfig);
-    }
-}
-```
 ### 3.1.2、return退回模式
 
 消息从 exchange 到 queue 投递失败有一个 returnCallback 退回模式。（失败时才会有返回）
 
-1. 在配置文件中开启消息异常重新入队
-```java
-# 确保消息发送失败后可以重新返回到队列中
-# 也可以通过 rabbitTemplate.setMandatory(true) 来设置
-spring.rabbitmq.publisher-returns=true
+
+**实现confirm callback和return callback：**
+
+1. 配置文件开启相关配置
+
+```yml
+spring:
+  #配置rabbitMq 服务器
+  rabbitmq:
+    host: 127.0.0.1
+    port: 5672
+    username: yancey
+    password: yancey
+ 
+    # confirmCallback 确认模式
+    # SIMPLE       禁用发布确认模式，是默认值
+	# CORRELATED   发布消息成功到交换器或失败后 会触发回调方法
+	# NONE         有两种效果，其一效果和CORRELATED值一样会触发回调方法，其二在发布消息成功后使用。rabbitTemplate调用waitForConfirms或waitForConfirmsOrDie方法等待broker节点返回 发送结果，根据返回结果来判定下一步的逻辑，要注意的点是waitForConfirmsOrDie方法如果 返回false则会关闭channel，则接下来无法发送消息到broker;
+    publisher-confirm-type: correlated
+ 
+    # returnCallback 退回模式
+    publisher-returns: true
 ```
 
-2. 通过实现 RabbitTemplate.ConfirmCallback 类来对消息发送结果进行处理
-```java
-@Component
-public class RabbitReturnConfig implements RabbitTemplate.ReturnCallback {
-    @Override
-    public void returnedMessage(Message message, int replyCode, String replyText, String exchange, String routingKey) {
-        // 根据具体的业务对异常进行处理，自行判断是否消息可以丢弃
-        if (AMQP.NO_ROUTE == replyCode){
-            System.out.println("【队列】 交换机路由到队列失败====" + message);
-        }
-    }
-}
-```
+2. 编写配置类
 
-3. 对rabbitTemplate的 returnback 进行设置
 ```java
 @Configuration
 public class RabbitConfig {
-    @Autowired
-    RabbitReturnConfig rabbitReturnConfig;
-
-    @Autowired
-    private RabbitTemplate rabbitTemplate;
-
-    @PostConstruct
-    public void initRabbitTemplate(){
-        rabbitTemplate.setReturnCallback(rabbitReturnConfig);
+ 
+    @Bean
+    public RabbitTemplate createRabbitTemplate(ConnectionFactory connectionFactory) {
+        RabbitTemplate rabbitTemplate = new RabbitTemplate();
+        rabbitTemplate.setConnectionFactory(connectionFactory);
+ 
+        //设置消息投递失败的策略，有两种策略：自动删除或返回到客户端。
+        //我们既然要做可靠性，当然是设置为返回到客户端(true是返回客户端，false是自动删除)
+        rabbitTemplate.setMandatory(true);
+ 
+        rabbitTemplate.setConfirmCallback(new RabbitTemplate.ConfirmCallback() {
+            @Override
+            public void confirm(CorrelationData correlationData, boolean ack, String cause) {
+                log.info("相关数据：" + correlationData);
+                if (ack) {
+                    log.info("投递成功,确认情况：" + ack);
+                } else {
+                    log.info("投递失败,确认情况：" + ack);
+                    log.info("原因：" + cause);
+                }
+            }
+        });
+ 
+        rabbitTemplate.setReturnCallback(new RabbitTemplate.ReturnCallback() {
+            @Override
+            public void returnedMessage(Message message, int replyCode, String replyText, String exchange, String routingKey) {
+               log.info("ReturnCallback:     " + "消息：" + message);
+               log.info("ReturnCallback:     " + "回应码：" + replyCode);
+               log.info("ReturnCallback:     " + "回应信息：" + replyText);
+               log.info("ReturnCallback:     " + "交换机：" + exchange);
+               log.info("ReturnCallback:     " + "路由键：" + routingKey);
+            }
+        });
+ 
+        return rabbitTemplate;
     }
 }
-
 ```
+
+
 ### 3.1.3、消费者端ack机制
 消费者端消息接收确认采用的是ack模式。ACK机制是消费者从RabbitMQ收到消息并处理完成后，反馈给RabbitMQ，RabbitMQ收到反馈后才将此消息从队列中删除
 
@@ -600,7 +440,8 @@ public class RabbitConfig {
 ```java
 acknowledge-mode: manual # 设置消费端手动 ack
 ```
-	消费者类
+
+消费者类
 ```java
 @Component
 public class Consumer {
@@ -613,32 +454,31 @@ public class Consumer {
             channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
         }catch (Exception e){
             // 消费失败后ack
-            //注意：参数三若设置为true，会出现死循环
+            // 三个参数：
+            // （1）delivery_tag：表示消息的唯一标识符
+            // （2）multiple：表示是否将delivery_tag之前的所有未确认消息都拒绝。如果multiple为true，则RabbitMQ将拒绝所有未确认的消息，如果为false，则只拒绝指定的消息
+            // （3）requeue：表示是否将被拒绝的消息重新放回队列中。如果requeue为true，则消息将返回到队列中以便重新处理，如果为false，则消息将被丢弃
             channel.basicNack(message.getMessageProperties().getDeliveryTag(),false,false);
-			/*
+		
             if (message.getMessageProperties().getRedelivered()) {//判断是否已经重试过
                 log.error("消息已重复处理失败,拒绝再次接收...");
                 channel.basicReject(message.getMessageProperties().getDeliveryTag(), false); // 拒绝消息
+                // 重复消费失败的消息入库...
             } else {
                 log.error("消息即将再次返回队列处理...");
                 channel.basicNack(message.getMessageProperties().getDeliveryTag(), false, true);
             }
-			*/
+		
         }
     }
 }
 ```
-> 1、basicAck
-> void basicAck(long deliveryTag, boolean multiple) :表示成功确认，使用此回执方法后，消息会被rabbitmq broker 删除。
-> （1）deliveryTag：表示消息投递序号，每次消费消息或者消息重新投递后，deliveryTag都会增加。手动消息确认模式下，我们可以对指定deliveryTag的消息进行ack、nack、reject等操作。
-> （2）multiple：是否批量确认，值为 true 则会一次性 ack所有小于当前消息 deliveryTag 的消息。
-> (举个栗子： 假设我先发送三条消息deliveryTag分别是5、6、7，可它们都没有被确认，当我发第四条消息此时deliveryTag为8，multiple设置为 true，会将5、6、7、8的消息全部进行确认)
-> 
-> 2、basicNack
-> void basicNack(long deliveryTag, boolean multiple, boolean requeue)表示失败确认，一般在消费消息业务异常时用到此方法，可以将消息重新投递入队列
-> （1）deliveryTag：表示消息投递序号。
-> （2）multiple：是否批量确认。
-> （3）requeue：值为 true 消息将重新入队列。
+
+
+>requeue参数设置为true，可以将消息返回到队列中以便重新处理
+>但是这样可能导致无限循环地处理同一个错误消息
+>所以上面代码采用了折中方案：首次失败的消息通知队列重发，重复失败的消息落地进行后面的补偿机制
+
 
 
 ## 3.2、消息持久化机制
@@ -659,27 +499,32 @@ public DirectExchange(String name, boolean durable, boolean autoDelete) {
 }
 
 ```
+
 ### 3.2.2、队列持久化
 申明队列时也有个参数：durable。当该参数为true，则对该queue做持久化，重启rabbitmq服务器，该queue不会消失。durable的默认值为true
 ```java
-// exclusive:排他队列，声明了exclusive属性的队列只对首次声明它的连接可见，并且在连接断开时自动删除
+// durable: 是否做队列持久化
+// exclusive: 是否排外。两个作用：（1）当连接关闭时connection.close()该队列是否会自动删除（2）对当前队列加锁，其他通道channel是不能访问的，用于一个队列只能有一个消费者来消费的场景
 // autoDelete:当所有消费客户端连接断开后，是否自动删除 
 public Queue(String name, boolean durable, boolean exclusive, boolean autoDelete) {
         this(name, durable, exclusive, autoDelete, (Map)null);
 }
 ```
+
 ## 3.3、避免消息重复消费
 ### 3.3.1、消息重复发送的场景
-消息消费成功，事务已经提交，ack时，机器宕机，导致没有ack成功，Broker的消息重新由unack变为ready，并发送给其他消费者；相当于锁库存被消费了两遍，即库存扣了两遍；
+消费者消费消息成功后，在给MQ发送消息确认的时候出现了网络异常(或者是服务中断)，MQ没有接收到确认，此时MQ不会将发送的消息删除，会继续给消费者投递之前的消息。这时候消费者就接收到了两条一样的消息
 
 ### 3.3.2、解决方案
-保证消费者的幂等性
-如何保证幂等性？
+保证消费者的幂等性（调用方，对一个系统进行重复调用（参数全部相同），不论重复调用多少次，这些调用对系统的影响都是相同的效果）
 
+如何保证幂等性？
 1. 使用代码的逻辑判断，判断消息状态是否已经被消费过了
+
 > 使用数据库一个表来记录消息的状态（或者用redis来记录也可以）。每次消费之前，都查询判断消息的状态，是否已经被消费了。这个状态可以是id。例如，如果消息是订单，而且id是全局唯一的，那么只需要拿这个订单id来做判断即可。
 
 2. 使用token，要申请，一次有效性。
+
 > 在创建订单的场景下。首先，先生成一个token，返回给客户端存起来，同时也在后端存起来（redis）。当他创建订单的时候，带着这个token来请求后端，后端判断redis里是否存在，如果存在，则操作成功，同时删除token（删除了之后，就算他重复多次调用，前边的判断不成立，这样子就不能多次操作了）
 
 
@@ -693,7 +538,10 @@ public Queue(String name, boolean durable, boolean exclusive, boolean autoDelete
 
 ## 3.5、保证消息的顺序性
 ### 3.5.1、消息顺序错乱场景
+
 生产者向一个消息队列发送 创建学生信息 与 更新学生信息 两条消息。如果有两个消费者，可能同时一个消费者做创建学生的操作，另外一个消费者做更新学生的操作。那么就有可能发生，更新学生基本信息的操作早于创建学生基本信息的操作。这样的话更新就会失败。
 
 ### 3.5.2、解决方案
-思路就是拆分队列，使得每个队列只有一个消费者，这样消费者一定是按照顺序消费的
+保证队列与消费者一对一
+思路就是拆分队列，使得每个队列只有一个消费者，这样消费者一定是按照顺序消费的 
+

@@ -11,7 +11,7 @@ nav:
 menu:
   主页: / || fas fa-home
   # Archives: /archives/ || fas fa-archive
-  # Tags: /tags/ || fas fa-tags
+  Tags: /tags/ || fas fa-tags
   分类: /categories/ || fas fa-folder-open
   # List||fas fa-list:
   #   Music: /music/ || fas fa-music
