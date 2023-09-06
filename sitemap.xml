@@ -2,15 +2,6 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>https://www.guoyancheng.com/posts/0.html</loc>
-    
-    <lastmod>2023-09-06</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
     <loc>https://www.guoyancheng.com/posts/2904.html</loc>
     
     <lastmod>2023-09-06</lastmod>
@@ -21,6 +12,15 @@
   
   <url>
     <loc>https://www.guoyancheng.com/posts/12731.html</loc>
+    
+    <lastmod>2023-09-02</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.guoyancheng.com/posts/59630.html</loc>
     
     <lastmod>2023-09-02</lastmod>
     
@@ -501,6 +501,13 @@
   
   <url>
     <loc>https://www.guoyancheng.com/tags/%E6%B8%85%E6%9C%9D/</loc>
+    <lastmod>2023-09-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.guoyancheng.com/tags/%E5%B8%B8%E8%AF%86/</loc>
     <lastmod>2023-09-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
