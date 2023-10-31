@@ -15,7 +15,6 @@ abbrlink: 58693
 2. Java 语言是健壮的。Java 的强类型机制、异常处理、垃圾的自动收集等是 Java 程序健壮性的重要保证
 3. Java 语言是跨平台性的。[即: 一个编译好的.class 文件可以在多个系统下运行，这种特性称为跨平台]
 4. java是一种半编译，半解释型语言。 . Java-->. class是由 Javac 编译，这个过程符合编译型语言的特点。而. class-->对应平台机器码 的这一过程 是由Java解释执行 
-
 # 2、变量
 ## 2.1、java基本数据类型
 java基本数据类型 - 四类八种
@@ -80,6 +79,10 @@ public class AutoConvertDetail {
     float num500 = b4 + s3 + num200 + num300; 
 }
 ```
+
+>floatf=3.4;是否正确？
+不正确。3.4是双精度数，将双精度型（double）赋值给浮点型（float）属于下转型（down-casting，也称为窄化）会造成精度损失，因此需要强制类型转换floatf=(float)3.4;或者写成floatf=3.4F;
+
 ### 2.2.2、强制类型转换
 
 将容量大的数据类型转换为容量小的数据类型。使用时要加上强制转换符( )，但可能造成精度降低或溢出,格外要注意。
@@ -340,13 +343,13 @@ java种有7个位运算 &（按位与）,|（按位或）,^（按位异或）,~�
 ## 4.1、面向对象三大特征
 ### 4.1.1、封装
 
-封装就是将数据或函数等集合在一个类中。向外暴露访问数据的方法get/set
+**封装**：尽量避免向外部暴露实现细节，只提供个别接口让使用方调用，降低耦合性。这样做的话，当自身的逻辑发生变化时，不会破坏使用方的逻辑，或是强制使用方修改自身的逻辑，而是只需要修改自身的代码就可以了
 ### 4.1.2、继承
 
-继承就是由已经存在的类创建新类的机制、在已经存在的类的基础上扩展功能，提高代码复用率
+**继承**：子类继承父类的特征和行为，使得子类对象（实例）具有父类的属性和方法。以降低代码编写的冗余度
 ### 4.1.3、多态
 
-多态允许我们使用一个父类类型的引用来引用子类对象，并根据实际对象的类型来执行相应的方法。简单来说，多态性允许不同类型的对象对同一个方法做出不同的响应
+**多态**：父类的引用指向子类的对象。它的意义是可以让我们不用关心某个对象到底是什么具体类型，就可以使用该对象的某些方法，而这些方法通过一个抽象类或者接口来实现，多态就是提供父类调用子类代码的一个手段而已
 
 ## 4.2、内部类
 
@@ -354,7 +357,7 @@ java种有7个位运算 &（按位与）,|（按位或）,^（按位异或）,~�
 如果定义在成员位置 (1) 成员内部类 (2) 静态内部类  
 ### 4.2.1、局部内部类
 
-局部内部类是定义在外部类的局部位置，比如方法中，并且有类名
+局部内部类是定义在外部类的局部位置，比如方法中，并且有类名数据
 
 > 说明：
 > 1. 可以直接访问外部类的所有成员，包括私有
@@ -400,13 +403,15 @@ interface IA{
 }
 
 class Outer {
-    // 编译类型为IA，运行类型为匿名内部类Outer$1
-    // jdk 底层在创建匿名内部类 Outer$1,立即马上就创建了 Outer$1 实例，并且把地址返回给 tiger
-    IA tiger = new IA() {
-        @Override public void cry() { 
-            System.out.println("老虎叫..."); 
-        } 
-    };
+	public void sayHello() {
+		// 编译类型为IA，运行类型为匿名内部类Outer$1
+       // jdk 底层在创建匿名内部类 Outer$1,立即马上就创建了 Outer$1 实例，并且把地址返回给 tiger
+	    IA tiger = new IA() {
+	        @Override public void cry() { 
+	            System.out.println("老虎叫..."); 
+	        } 
+	    };
+	}
 }
 ```
 
@@ -418,13 +423,16 @@ class Father {
 }
 
 class Outer{
-    // father 编译类型 Father, father 运行类型 Outer$1
-    Father father = new Father("jack"){
-        @Override
-        public void test() {
-            System.out.println("匿名内部类重写了 test 方法");
-        }
-    };
+	public void sayHello() {
+		// father 编译类型 Father, father 运行类型 Outer$1
+	    Father father = new Father("jack"){
+	        @Override
+	        public void test() {
+	            System.out.println("匿名内部类重写了 test 方法");
+	        }
+	    };
+	}
+    
 }
 ```
 
@@ -473,6 +481,91 @@ class Outer10 { //外部类
     }
 }
 ```
+
+## 4.3、重载和重写
+
+**重载**发生在一个类中，同名的方法如果有不同的参数列表（参数类型不同、参数个数不同或者二者都不同）则视为重载
+**重写**，子类重写父类方法，返回值（JDK7以后，被重写的方法返回值类型可以不同，但是必须是父类返回值的派生类）和形参都不能改变
+
+> 不能根据返回类型来区分重载
+> float max(int a, int b);
+> int max(int a, int b);
+> 上面两个方法名称和参数都一致，如果在同一个类中，别的地方调用的时候都是max（1，2），不能区分出想调用哪个方法
+
+## 4.4、抽象类和接口
+
+1、接口的设计目的，是对类的行为进行约束。也就是提供一种机制，可以强制要求不同的类具有相同的行为。它只约束了行为的有无，但不对如何实现行为进行限制
+2、而抽象类的设计目的，是代码复用。当不同的类具有某些相同的行为。可以在抽象类中实现这种行为。这样它所有的子类就无需重复实现。达到代码复用的目的
+
+## 4.5、Object类常用方法
+
+1. hashcode（）：将对象的16进制地址值，经过hash算法换算成整值
+2. toString（）：返回该对象的字符串对象
+3. equals（）：比较两个对象的地址值是否相同
+4. clone（）：实现对象的浅拷贝
+5. getclass（）：获取该对象的字节码文件（该对象运行时的类）Class
+6. wait（）notify（）notifyAll（）：wait（）让当前线程进入等待状态。直到其他线程调用此对象的 notify() 方法或 notifyAll() 方法
+
+> void notify()：唤醒一个正在等待该对象的线程。
+  void notifyAll()：唤醒所有正在等待该对象的线程
+
+> 1. equals()没有被重写的情况下等同于 ==
+  Object的equals()方法源码：
+    public boolean equals(Object obj) {
+        return (this == obj);
+    }
+  这用情况= =和equals（）都是引用比较 
+  2. string重写了Object的equals（）方法这种情况equals（）是值比较
+
+## 4.6、深拷贝和浅拷贝
+**浅拷贝**：基本数据类型复制值，引用数据类型复制地址，即拷贝出来的对象与被拷贝出来的对象中的引用的对象是同一个（java默认）：clone方法
+**深拷贝**：基本数据类型复制值，引用数据类型，创建一个新的对象，并复制其内容
+
+```java
+// 使用对象序列化来实现克隆
+public class Room implements Serializable {
+    Desk desk;
+ 
+    public Room deepClone() throws Exception{
+        //序列化
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
+        objectOutputStream.writeObject(this);
+        //反序列化
+        ByteArrayInputStream inputStream = new ByteArrayInputStream(outputStream.toByteArray());
+        ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
+        Room roomClone = (Room)objectInputStream.readObject();
+        return roomClone;
+        
+    }
+}
+```
+
+
+## 4.7、面向对象和面向过程的理解
+
+是两种不同的处理问题的角度。面向过程更注重事情的每一个步骤及顺序，面向对象更注重事情有哪些参与者（对象）、及各自需要做什么
+
+> 比如：洗衣机洗衣服
+  **面向过程**：会将任务拆解成一系列的步骤（函数），1、打开洗衣机 2、放衣服3、放洗衣粉4、清洗 5、烘干
+  **面向对象**：会拆出人和洗衣机两个对象：人：打开洗衣机，放衣服，放洗衣粉 洗衣机：清洗，烘干
+
+从以上例子能看出，面向过程比较简单直接，而面向对象更易于复用、扩展和维护
+
+## 4.8、sleep（）和wait（）区别
+
+1. 所属的类型不同 
+- wait()是Object类的实例方法,调用该方法的线程将进入WTING状态。 
+- sleep()是Thread类的静态方法,调用该方法的线程将进入TIMED_WTING状态
+
+1. 对锁的依赖不同 
+- wait()依赖于synchronized锁,通过监视器进行调用,调用后线程会释放锁。
+- sleep()不依赖于任何锁,所以在调用后它也不会释放锁。
+
+1. 返回的条件不同 
+- 调用wait()进入等待状态的线程,需要由notify()/notifyAll()唤醒,从而返回。 
+- 调用sleep()进入超时等待的线程,需要在超时时间到达后自动返回。
+
 
 # 5、枚举
 ## 5.1、实现方式
@@ -739,13 +832,83 @@ LocalDateTime localDateTime2 = ldt.minusMinutes(3456);
 System.out.println("3456 分钟前 日期=" + dateTimeFormatter.format(localDateTime2));
 ```
 
+
+## 8.2、容器
+
+![image.png](https://yancey-note-img.oss-cn-beijing.aliyuncs.com/202310301540735.png)
+
+
+|名称|底层|线程安全性|扩容机制|备注|
+|--|--|--|--|--|
+|ArrayList|数组|线程不安全|首次创建长度为10，扩为1.5倍|查找快，增删慢|
+|Vector|数组|线程安全|首次创建长度为10，扩为1.5倍|查找快，增删慢|
+|LinkedList|双向链表|线程不安全|不主动扩容|增删快，查找慢|
+|HashSet|HashMap|线程不安全||可以存null|
+|LinkedHashSet|LinkedHashMap|线程不安全||可以存null|
+|TreeSet|TreeMap|线程不安全||不允许存null|
+|HashMap|数组+链表（jdk7） 数组+链表+红黑树 （jdk8）|线程不安全|首次创建长度16，扩容2倍,负载因子0.75|可以存nul|
+|LinkedHashMap|同hashmap|线程不安全|不主动扩容|可以存null|
+|HashTable|数组+链表|线程安全|首次创建时长度为11，扩容为2n+1|不能为null|
+|TreeMap|红黑树|线程不安全|TreeMap由红黑树实现，容量方面没有限制|不能为null 可以实现自然排序和定制排序 |
+
+### 8.2.1、hashmap原理
+
+hashmap数据结构是数组+链表+红黑树，HashMap的主干是一个Entry数组。Entry是HashMap的基本组成单元，每一个Entry包含一个key-value键值对
+两个重要的方法put() get()
+（1）.put方法：调用key的hash方法得hash值，再与（数组长度-1）做与（&）运算，到这个元素在数组中的位置（即下标）如果该位置已经存在其它元素，那么在同一个位子上的元素将以链表的形式存放，通过equals方法依次比较链表中的key，相同则替换。不同则添加到表尾（1.8之前添加到表头）。
+（2）.get方法：调用key的hash方法得到这个元素在数组中的位置（即下标），然后通过key的equals方法在对应位置的链表中找到需要的元素。
+
+> （需要注意Jdk 1.8中对HashMap的实现做了优化,当链表长度大于8且数组长度超过64并之后,该链表会转为红黑树来提高查询效率,从原来的O(n)到O(logn)）
+> 如果数组长度不足64，优先会进行扩容
+
+### 8.2.2、自然排序和定制排序
+
+自然排序：实现Comparable接口，实现compareTo方法
+
+> 典型实现：String，Integer，Date等
+
+定制排序：当元素对象没有实现comparable接口，又不方便修改，可以考虑使用定制排序，直接在调用方排序
+
+
+```java
+Collections.sort(arrayList, new Comparator<Integer>() {
+        @Override
+        public int compare(Integer o1, Integer o2) {
+            return o1.compareTo(o2);
+        }
+});
+```
+
+
+## 8.3、String
+
+不可变性的理解：
+
+```java
+String s = "abc";    //(1)
+System.out.println("s = " + s);
+ 
+s = "123";    //(2)
+System.out.println("s = " + s);
+```
+
+![b6f0e64b3015ee2ebe2bd49b02c2a68.jpg|275](https://yancey-note-img.oss-cn-beijing.aliyuncs.com/202310270955924.jpg)
+
+s只是一个String对象的引用，并不是String对象本身。
+当执行(1)处这行代码之后，会先在方法区的运行时常量池创建一个String对象"abc"，然后在Java栈中创建一个String对象的引用s，并让s指向"abc"
+当执行完(2)处这行代码之后，会在方法区的运行时常量池创建一个新的String对象"123"，然后让引用s重新指向这个新的对象，而原来的对象"abc"还在内存中，并没有改变
+
+为什么这样设计？
+(1)、字符串常量池中的对象可能被很多对象引用，如果一个修改会导致所有对象的内容都变
+(2)、hashmap中key的hash方法只会调用一次然后缓存起来，如果key可变会导致缓存的结果和真实的计算结果不一致
+
 # 9、泛型
 ## 9.1、基本概念
 
-1. 泛型又称参数化类型，是JDK5出现的新特性，泛型的本质是参数化类型，即给类型指定一个参数，然后在使用时再指定此参数具体的值，那样这个类型就可以在使用时决定了。这种参数类型可以用在类、接口和方法中，分别被称为泛型类、泛型接口、泛型方法
+（1）泛型：Java在jdk5引入了泛型，在没有泛型之前，每次从集合中读取的对象都必须进行类型转换，如果在插入对象时，类型出错，那么在运行时转换处理的阶段就会报错。在提出泛型之后就可以明确的指定集合接受哪些对象类型，编译器就能知晓并且自动为插入的代码进行泛化，在编译阶段告知是否插入类型错误的对象，程序会变得更加安全清晰。 
+（2）泛型擦除：Java泛型是伪泛型，因为Java代码在编译阶段，所有的泛型信息会被擦除，Java的泛型基本上都是在编辑器这个层次上实现的，在生成的字节码文件中是不包含泛型信息的，使用泛型的时候加上的类型，在编译阶段会被擦除掉，这个过程称为泛型擦除。
 
-2. 为什么使用泛型？
-
+为什么使用泛型？
 （1）保证类型安全：可以确保在编译时期检测到类型不匹配的错误，避免在运行时出现类型转换错误
 （2）消除强制转换：消除源代码中的许多强制类型转换，这使得代码更加可读，并且减少了出错机会
 
@@ -827,6 +990,7 @@ public class Caculate{
 
 java的泛型称为伪泛型，因为Java的泛型只是编译期的泛型，一旦编译成字节码，泛型就被擦除了，即在Java中使用泛型，我们无法在运行期知道泛型的类型，一旦编译成字节码，泛型将被取代为Object。
 在不使用泛型时，我们需要将Object手动转型成特定类型，而在使用泛型后，我们不需要自己转型，但实际上我们get到的对象仍然是Object类型的，只不过编译器会自动帮我们加入这个转型动作
+
 
 # 10、IO
 
@@ -1046,3 +1210,32 @@ T newInstance(Object... initargs)
 2. 获取方法名称：
 	String getName:获取方法名
 ```
+
+
+# 12、异常
+
+![image.png](https://yancey-note-img.oss-cn-beijing.aliyuncs.com/202310301636988.png)
+
+
+Error：错误，无法被处理的
+
+Exception：异常，能够被程序本身处理的，可以通过try…catch语句捕捉异常，或者是throws抛出异常。分为运行时异常和非运行时异常
+- 运行时异常：就是RuntimeException，编译时不会检查出错误的。一般是由于逻辑错误引起的，程序员可以手动去解决的，比如判空等。
+- 非运行时异常：也叫编译异常，就是Exception下除了RuntimeException以外的异常。是必须进行处理的异常，编译器会进行异常提醒的。如果不进行处理，程序编译不通过
+
+
+# 13、日志
+## 13.1、基本概念
+
+![image (26).png](https://yancey-note-img.oss-cn-beijing.aliyuncs.com/202310270851142.png)
+
+> 常用的组合使用方式是Slf4j与Logback组合使用，Commons Logging与Log4j组合使用。
+
+## 13.2、java日志演化历史
+
+（1）最开始出现的是 log4j，也是应用最广泛的日志系统，作者是 Ceki Gülcü，开始时，一切都是美好的。
+（2）但 java 的开发主体 Sun 公司认为自己才是正统，为了干掉 log4j，在 jdk1.4 中增加了 jul（因为在 java.util.logging 包下）日志的实现，造成了目前开发者的混乱，迄今为止仍饱受诟病。
+（3）各个日志系统互相没有关联，替换和统一变的非常麻烦。A 项目用 log4j 作为日志系统，但同时引了 B 项目，而 B 项目用 jul 作为日志系统，那么你的应用就得使用两个日志系统。
+（4）为了搞定这个坑爹的问题，开源社区 apache 提供了一个日志框架作为日志的抽象，叫 commons-logging，也被称为 jcl（java common logging），jcl 对各种日志接口进行抽象，抽象出一个接口层，对每个日志实现都适配或者桥接，这样这些提供给别人的库都直接使用抽象层即可，较好的解决了上述问题。
+（5）当年 Apache 说服 log4j 以及其他的日志来按照 commons-logging 的标准编写，但是由于 commons-logging 的类加载有点问题，实现起来也不友好，作为元老级日志 log4j 的作者再度出山，搞出了一个更加牛逼的新的日志框架 slf4j（这个也是抽象层），同时针对 slf4j 的接口实现了一套日志系统，即传说中的 logback。
+（6）同时这个作者心情一好，又把 log4j 进行了改造，就是所谓的 log4j2，同时支持 jcl 以及 slf4j。
