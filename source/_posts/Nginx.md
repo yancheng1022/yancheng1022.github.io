@@ -5,6 +5,7 @@ categories:
   - coding
 tags:
   - nginx
+  - 编程基础
 abbrlink: 58122
 ---
 # 1、nginx简介

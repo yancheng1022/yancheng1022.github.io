@@ -40,6 +40,8 @@ Redis诞生于2009年全称是Remote Dictionary Server，远程词典服务器�
 # 2、redis常见命令
 ## 2.1、String
 
+String是Redis中最基本的数据类型，可以存储任何数据，包括二进制数据、序列化的数据、JSON化的对象甚至是图片。 
+
 > String类型，也就是字符串类型，是Redis中最简单的存储类型
 > 底层SDS结构。为什么不直接实用字符串？①C 语言字符数组最后一个元素总是 '\0'，而在Redis中\0可能会被判定为提前结束而识别不了字符串②获取字符串长度为O(n)，因为C字符串需要去遍历，开销较大，SDS对象有len属性直接获取
 
@@ -790,7 +792,7 @@ aof写数据策略：
 | 恢复速度 | 快 | 慢（需要执行指令） |
 | 数据安全性 | 可能会丢失最后一次持久化后的数据 | 根据策略决定 |
 
-## 4.2、redis淘汰策略
+## 4.2、redis数据删除策略
 
 ### 4.2.1、定时删除
 方式：创建一个定时器,当设置的key到达到期时间时,由定时器任务立即执行对key的删除操作
@@ -842,7 +844,7 @@ Redis的内存淘汰策略是指在Redis的用于缓存的内存不足时，怎�
 |volatile-lfu|从设置了过期时间的数据中根据 LFU 算法挑选数据淘汰（4.0及以上版本可用）|
 
   
-## 4.4、redis工作模式
+## 4.4、redis工作模式（高可用）
 
 ### 4.4.1、单机模式
 
@@ -851,7 +853,6 @@ Redis的内存淘汰策略是指在Redis的用于缓存的内存不足时，怎�
 ### 4.4.2、主从复制模式
 
 主从复制模式通过将数据从主节点复制到一个或多个从节点来提高数据的可靠性和读取性能。主节点负责处理写入操作，从节点复制主节点的数据，并可以处理读取操作。主从复制模式适用于需要读取扩展和数据冗余的场景
-
 
 ### 4.4.3、哨兵模式
 
@@ -881,11 +882,15 @@ PUBLISH channel1 "Redis PUBLISH test"
 ## 4.6、缓存穿透、击穿、雪崩
 ###  4.6.1、缓存穿透
 
-某些不存在的数据，被大量的查询访问，缓存层中没有这些数据的缓存，请求就直达存储层，造成宕机
+缓存穿透：某些不存在的数据，被大量的查询访问，缓存层中没有这些数据的缓存，请求就直达存储层，造成宕机
 
 > 解决方法：
-1.返回空对象，将该key的空值返回给缓存层，缓存层会直接返回空对象。
-2.布隆过滤器：将所有的key都存在过滤器中，在访问缓存层的时候会首先访问过滤器，如果过滤器中不存在这个值，那么直接返回空值
+> 1.返回空对象，将该key的空值返回给缓存层，缓存层会直接返回空对象。
+> 2.布隆过滤器：将所有的key都存在过滤器中，在访问缓存层的时候会首先访问过滤器，如果过滤器中不存在这个值，那么直接返回空值。 
+
+> 布隆过滤器：它是一种类似哈希的数据结构，通过这个数据结构，可以快速的插入和查询，确定某个事件一定不存在或可能存在。特点是占用空间少，缺点是返回的结果是概率性
+> 当一个元素加入集合时，就通过K个hash函数将这个映射成一个位数组中的K个点，把它们置为1。当查询时，只要检查这些点是否全为1，就能判断集合中是否可能存在。
+> 如果k个点有任何一个0，则被检元素一定不在。如果都是1，则很可能存在，这个期望概率是可以设置
 
 
 ### 4.6.2、缓存击穿？
@@ -904,4 +909,89 @@ PUBLISH channel1 "Redis PUBLISH test"
 >1.不同的key，设置不同的过期时间，让缓存失效的时间点尽量均匀
 >2.在系统启动或低峰期(比如系统刚启动)，提前加载热门数据到缓存中，避免在高峰期大量请求同时访问导致缓存失效
 
+
+## 4.7、redis实现分布式锁
+
+在分布式的环境下,会发生多个server并发修改同一个资源的情况,这种情况下,由于多个server是多个不同的JRE环境,而Java自带的锁局限于当前JRE,所以Java自带的锁机制在这个场景下是无效的,那么就需要我们自己来实现一个分布式锁
+
+1. 通过`set...nx...`命令,将加锁、过期命令编排到一起,把他们变成原子操作。完整命令：set key random-value nx ex seconds
+
+> 其实目前通常所说的Setnx命令，并非单指Redis的setnx key value这条命令。
+> 一般代指Redis中对set命令加上nx参数进行使用
+
+> （1）nx  ex 是set指令的两个参数： ex过期时间    nx只有key不存在时设置新的key/value
+> （2）key设置成随机数，避免一个线程过期时间内没释放掉锁，过期后有另一个线程获取到锁，该线程执行完后释放掉另一个线程获取的锁
+> （3）设置过期时间（EX）作用：如果客户端忘记解锁,那么这种情况就很有可能造成死锁
+> （4）NX的作用：避免重复获取锁
+
+
+2. 解锁的时候进行判断,是自己持有的锁才能释放,否则不能释放。另外判断,释放这两步需要保持原子性，所以通过Lua脚本将两个命令编排在一起,而整个Lua脚本的执行是原子的
+
+> if redis.call("get",KEYS[1]) == ARGV[1] then return redis.call("del",KEYS[1]) else return 0 end
+
+> **这里为什么要用原子操作？**
+> 主要是怕误将其他客户端的锁解开。比如客户端A加锁，一段时间之后客户端A解锁，在进入unlock后执行jedis.del()之前，锁突然过期了，此时客户端B尝试加锁成功，然后客户端A再执行del()方法，则将客户端B的锁给解除
+
+```java
+import redis.clients.jedis.Jedis;
+
+public class RedisLock {
+    private Jedis jedis;
+
+    public RedisLock(Jedis jedis) {
+        this.jedis = jedis;
+    }
+
+    /**
+     * 尝试获取锁
+     * @param lockKey 锁的名称
+     * @param requestId 请求标识，用于释放锁
+     * @param expireTime 锁的过期时间
+     * @return 是否成功获取锁
+     */
+    public boolean tryLock(String lockKey, String requestId, int expireTime) {
+        String result = jedis.set(lockKey, requestId, "NX", "EX", expireTime);
+        if ("OK".equals(result)) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * 释放锁
+     * @param lockKey 锁的名称
+     * @param requestId 请求标识，用于判断是否是同一个客户端
+     * @return 是否成功释放锁
+     */
+    public boolean releaseLock(String lockKey, String requestId) {
+        String script = "if redis.call('get', KEYS[1]) == ARGV[1] then return redis.call('del', KEYS[1]) else return 0 end";
+        // jedis.eval是Jedis客户端提供的一个用于执行Lua脚本的方法
+        Long result = (Long) jedis.eval(script, 1, lockKey, requestId);
+        if (result == 1) {
+            return true;
+        }
+        return false;
+    }
+}
+
+```
+
+> 另外可以通过Redisson框架，它的底层原理其实也是这个setnx
+
+
+## 4.8、redis和数据库的双写一致性
+更新数据库和更新redis不是一个原子操作。所以根据业务场景有两种方案：
+
+1.保证最终一致性（可以接受数据短期不一致）
+
+先更新数据库，再更新redis。第二步更新redis失败的请求异步写入mq消息队列，利用mq的重试机制进行更新
+
+![image.png|500](https://yancey-note-img.oss-cn-beijing.aliyuncs.com/202311141021779.png)
+
+
+2.强一致性保证
+
+使用读写锁，在数据更新的时候，其它任何请求都无法访问缓存中的数据
+
+![image.png|500](https://yancey-note-img.oss-cn-beijing.aliyuncs.com/202311141022655.png)
 

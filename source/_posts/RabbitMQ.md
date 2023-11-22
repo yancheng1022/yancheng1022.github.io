@@ -69,6 +69,7 @@ MQ全称Message Queue（消息队列），是在消息传输过程中保存消�
 
 # 2、组件
 ## 2.1、RabbitMQ架构
+
 ![RabbitMQ架构](https://yancey-note-img.oss-cn-beijing.aliyuncs.com/202307241048618.png)
 
 

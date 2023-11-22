@@ -7,6 +7,7 @@ tags:
   - juc
   - 多线程
   - 并发编程
+  - 编程基础
 abbrlink: 42310
 ---
 # 1、java多线程基本概念
@@ -21,6 +22,7 @@ abbrlink: 42310
 - 一个进程之内可以分为一到多个线程。 
 - 一个线程就是一个指令流，将指令流中的一条条指令以一定的顺序交给 CPU 执行 
 - **Java 中，线程作为最小调度单位，进程作为资源分配的最小单位。 在 windows 中进程是不活动的，只是作为线程的容器**
+
 ## 1.2、并发和并行
 并发：线程轮流使用CPU
 并行：多核cpu下，多个核同时调度运行线程
@@ -30,6 +32,7 @@ abbrlink: 42310
 比如在项目中，视频文件需要转换格式等操作比较费时，这时开一个新线程处理视频转换，避免阻塞主线程 
 ### 1.3.2、提升效率
 充分利用多核 cpu 的优势，提高运行效率。想象下面的场景，执行 3 个计算，最后将计算结果汇总。
+
 ```java
 计算 1 花费 10 ms
 计算 2 花费 11 ms
@@ -45,6 +48,7 @@ abbrlink: 42310
 # 2、java线程
 ## 2.1、线程的创建
 ### 2.1.1、直接使用Thread
+
 ```java
 // 创建线程对象
 Thread t = new Thread() {
@@ -56,6 +60,7 @@ Thread t = new Thread() {
 t.start();
 ```
 ### 2.1.2、使用 Runnable 配合 Thread 
+
 ```java
 Runnable runnable = new Runnable() {
     public void run(){
@@ -67,7 +72,9 @@ Thread t = new Thread( runnable );
 // 启动线程
 t.start();
 ```
+
 java8可用lambda精简
+
 ```java
 // 创建任务对象
 Runnable task2 = () -> log.debug("hello");
@@ -96,31 +103,32 @@ log.debug("结果是:{}", result);
 ## 2.2、查看进程线程
 ### 2.2.1、windows
 
-1. tasklist 查看进程 
-2. taskkill 杀死进程 
-3. netstat -ano|findstr 8080 根据端口查看进程
+1.tasklist 查看进程 
+2.taskkill 杀死进程 
+3.netstat -ano|findstr 8080 根据端口查看进程
 ### 2.2.2、linux
 
-1. ps -fe 查看所有进程 
-2. kill 杀死进程
-3.  top -Hp <PID> 查看某个进程（PID）的所有线程 
-4. netstat -nlp|grep 8080 根据端口查看进程
+1.ps -fe 查看所有进程 
+2.kill 杀死进程
+3.top -Hp PID 查看某个进程（PID）的所有线程 
+4.netstat -nlp|grep 8080 根据端口查看进程
+
 ### 2.2.3、JDK
 
-1. jps 命令查看所有 Java 进程
-2.  jstack <PID> 查看某个 Java 进程（PID）的所有线程状态
-3.  jconsole 来查看某个 Java 进程中线程的运行情况（图形界面）
+1.jps 命令查看所有 Java 进程
+2.jstack PID 查看某个 Java 进程（PID）的所有线程状态
+3.jconsole 来查看某个 Java 进程中线程的运行情况（图形界面）
 
 ## 2.3、线程运行原理
 
-1. **线程创建**
+1.**线程创建**
 
-每个线程启动后，虚拟机就会为其分配一块栈内存。 每个栈由多个栈帧（Frame）组成
-，栈帧对应着每次方法调用所占内存
+每个线程启动后，虚拟机就会为其分配一块栈内存。 每个栈由多个栈帧（Frame）组成，栈帧对应着每次方法调用所占内存
 
-2. **上下文切换**
+2.**上下文切换**
 
 因为以下一些原因导致 cpu 不再执行当前的线程，转而执行另一个线程的代码 
+
 > 线程的 cpu 时间片用完 
 > 垃圾回收 
 > 有更高优先级的线程需要运行 
@@ -135,18 +143,22 @@ log.debug("结果是:{}", result);
 
 ## 2.5、sleep 与 yield 
 
-1. **sleep**
+1.**sleep**
+
 - 1. 调用 sleep 会让当前线程从 _Running_进入 _Timed Waiting _状态（阻塞） 
 - 2. 其它线程可以使用 interrupt 方法打断正在睡眠的线程，这时 sleep 方法会抛出 InterruptedException 
 - 3. 睡眠结束后的线程未必会立刻得到执行 
 
-2. **yield**
+2.**yield**
+
 - 1. 调用 yield 会让当前线程从 _Running _进入 _Runnable_就绪状态，然后调度执行其它线程 
 - 2. 具体的实现依赖于操作系统的任务调度器 
 
 ## 2.6、join
+
 join：t1调用t2的join方法，会先执行t2，然后执行t1
 如果调用的是无参join方法，则等待thread执行完毕，如果调用的是指定了时间参数的join方法，则等待一定的时间
+
 ```java
 static int r = 0;
 public static void main(String[] args) throws InterruptedException {
@@ -171,8 +183,12 @@ private static void test1() throws InterruptedException {
 
 
 ## 2.7、interrupt
+
+interrupt虽然是打断线程的方法，但不会立即结束线程运行，而是将线程的打断状态设置为true，在线程的isInterrupted方法来查看打断状态。
 ### 2.7.1、打断阻塞状态的线程
-sleep，wait，join 的线程 这几个方法都会让线程进入阻塞状态 ，打断 这几个状态 的线程, 会中断
+
+sleep，wait，join 的线程 这几个方法都会让线程进入阻塞状态 ，当使用interrupt()方法去打断处于阻塞状态的线程时，会以异常的方式打印，而不会更新打断标记，因此，虽然被打断，但是打断标记依然为false。此时就需要在try catch异常捕获处再次调用interrupt()方法，就会使打断状态为true，优雅结束线程运行
+
 ```java
 private static void test1() throws InterruptedException {
     Thread t1 = new Thread(()->{
@@ -184,7 +200,9 @@ private static void test1() throws InterruptedException {
     log.debug(" 打断状态: {}", t1.isInterrupted());
 }
 ```
+
 输出
+
 ```java
 java.lang.InterruptedException: sleep interrupted
      at java.lang.Thread.sleep(Native Method)
@@ -196,7 +214,9 @@ java.lang.InterruptedException: sleep interrupted
 21:18:10.374 [main] c.TestInterrupt - 打断状态: false
 ```
 ### 2.7.2、打断正常运行的线程
-打断正常运行的线程, 不会清空打断运行（此时我们需要通过打断状态来中止）
+
+当使用interrupt()方法去打断正在运行线程时，被打断的线程会继续运行，但是该线程的打断标记会更新，更新为true，因此可以根据打断标记来作为判断条件使得线程停止
+
 ```java
 private static void test2() throws InterruptedException {
     Thread t2 = new Thread(()->{
@@ -214,16 +234,41 @@ private static void test2() throws InterruptedException {
     t2.interrupt();
 }
 ```
+
 输出
+
 ```java
 20:57:37.964 [t2] c.TestInterrupt - 打断状态: true 
 ```
 
+### 2.7.3、除了interrupt外的别的方法（设置标志位）
+
+设置标志位：设置标志位是用到了共享变量的方式，我们了解线程对于变量的操作都是操作的变量副本，而一旦使用volatile关键字修饰后，因为其可见性，变量变更始将终从主存中获取最新值,因此主线程修改变量对新线程可见，在判断共享变量为fasle时，手动抛出异常可中止该线程
+
+```java
+public class ThreadDemo3 extends Thread{
+    /**共享变量**/
+    volatile Boolean heartbeat = true;
+    @Override
+    public void run() {
+        while (true){
+           /**判断标志是否为true**/
+            if (heartbeat){
+                
+            }else{
+                Throw new RuntimeException()
+            }
+        }
+    }
+}
+
+
 ## 2.8、主线程与守护线程
+
 默认情况下，Java 进程需要等待所有线程都运行结束，才会结束。有一种特殊的线程叫做守护线程，只要其它非守护线程运行结束了，即使守护线程的代码没有执行完，也会强制结束。 
 
 例
-```java
+
 log.debug("开始运行...");
 Thread t1 = new Thread(() -> {
     log.debug("开始运行...");
@@ -236,20 +281,22 @@ t1.start();
 
 sleep(1);
 log.debug("运行结束...");
-```
+
 输出
+
 ```java
 08:26:38.123 [main] c.TestDaemon - 开始运行... 
 08:26:38.213 [daemon] c.TestDaemon - 开始运行... 
 08:26:39.215 [main] c.TestDaemon - 运行结束...
 ```
 
-> **注意 **
+> **注意**
 > - 垃圾回收器线程就是一种守护线程 
 > - Tomcat 中的 Acceptor 和 Poller 线程都是守护线程，所以 Tomcat 接收到 shutdown 命令后，不会等待它们处理完当前请求 
 
 
 ## 2.9、线程状态
+
 | 状态   | 说明 |
 | --- | --- |
 | NEW | 初始状态:线程被创建，但还没有调用start()方法 |
@@ -263,18 +310,21 @@ log.debug("运行结束...");
 
 
 # 3、共享模型之管程
+
 管程（monitor），管理共享变量以及对其的操作过程，让这个类是线程安全的
 ## 3.1、monitor
 Monitor 被翻译为**监视器**或**管程**
 每个 Java 对象都可以关联一个 Monitor 对象，如果使用 synchronized 给对象上锁（重量级）之后，该对象头的Mark Word 中就被设置指向 Monitor 对象的指针
 
 ### 3.1.1、Monitor结构
+
 **结构**：owner  entryList  waitSet
 
 ![monitor结构](https://yancey-note-img.oss-cn-beijing.aliyuncs.com/202307230930118.jpg)
 
 
 ### 3.1.2、Monitor原理
+
 （1）刚开始monitor中owner为null 
 （2）当某个线程t1执行同步方法synchronized时，会将owner置为该线程 
 （3）t1持有锁过程中，t2，t3来了就会进入entryList中阻塞 
@@ -283,11 +333,11 @@ Monitor 被翻译为**监视器**或**管程**
 
 ## 3.2、java对象结构
 
-1. **对象头**
+1.对象头
 
-包括：对象头：Mark Word（标记字段）、Class Pointer（类型指针）,数组长度（如果是数组）
+包括：Mark Word（标记字段）、Class Pointer（类型指针，它主要指向类的数据，也就是指向方法区中的位置）,数组长度（如果是数组）
 
-![java对象头](https://yancey-note-img.oss-cn-beijing.aliyuncs.com/202307230930015.jpg)
+![markdown](https://yancey-note-img.oss-cn-beijing.aliyuncs.com/202307230930015.jpg)
 
 
 2. **实例数据**
@@ -297,49 +347,39 @@ Monitor 被翻译为**监视器**或**管程**
 3. **对齐填充**
 
 对齐填充：由于虚拟机要求 对象起始地址必须是8字节的整数倍。填充数据不是必须存在的，仅仅是为了字节对齐。
+
 ## 3.3、synchronized升级
+
 ### 3.3.1、偏向锁
+
 > 使用场景：如果只有一个线程，就不需要每次的申请释放锁
 
 只有第一次使用 CAS 将线程 ID 设置到对象的 Mark Word 头，之后发现这个线程 ID 是自己的就表示没有竞争，不用重新 CAS。以后只要不发生竞争，这个对象就归该线程所有 
 ### 3.3.2、轻量级锁
-> 使用场景：如果一个对象虽然有多线程要加锁，但加锁的时间是错开的（也就是没有竞争），那么可以使用轻量级锁来优化
+
+> 使用场景：有时候会存在多个线程访问同步代码的情况，但每个线程执行的时间很短，这时候没必要阻塞等待，通过自旋来等待
 
 ![轻量级锁](https://yancey-note-img.oss-cn-beijing.aliyuncs.com/202307230930202.jpg)
 
 
+（1）在代码进入同步块的时候，如果同步对象锁状态为无锁状态（锁标志位为“01”状态），虚拟机首先将在当前线程的栈帧中建立一个名为锁记录（Lock Record）的空间 （注意：是每次都会建，即使是重入），用于存储旧的Mark Word的拷贝，官方称其为Displaced Mark Word。(锁记录解锁的时候会用到)
 
-1. 创建 锁记录（Lock Record）对象，内部存储锁记录地址和状态00，还有对象引用指向锁对象
-2. 让锁记录中引用 指向锁对象，并尝试用 cas 替换 Object 的 Mark Word，将 Mark Word 的值存入锁记录
-3. 如果 cas 替换成功，对象头中存储了 锁记录地址和状态 00 ，表示由该线程给对象加锁
-4. 如果 cas 失败，有两种情况  
+（2）虚拟机将使用CAS操作尝试将对象的Mark Word更新为轻量级锁的标志位和指向锁记录（Lock Record）的指针。
 
-（1）如果是其它线程已经持有了该 Object 的轻量级锁，这时表明有竞争，进入锁膨胀过程 
-（2）如果是自己执行了 synchronized 锁重入，那么再添加一条 Lock Record 作为重入的计数（取值为null）
+（3）如果这个更新动作成功了，那么这个线程就拥有了该对象的锁。
 
-5. 当退出 synchronized 代码块（解锁时）如果有取值为 null 的锁记录，表示有重入，这时重置锁记录，表示重入计数减一
-6. 当退出 synchronized 代码块（解锁时）锁记录的值不为 null，这时使用 cas 将 Mark Word 的值恢复给对象头 
+（4）如果这个更新操作失败了，虚拟机首先会检查当前线程是否已经拥有了这个对象的锁，如果已经拥有，那就可以直接进入同步块继续执行（重入）。否则就说明这个锁度已经被其他线程抢占了。一旦发生这种情况，那么轻量级锁就会膨胀为重量级锁。Mark Word中存储的就会指向重量级锁的指针，后面等待锁的线程也会进入阻塞状态。
 
-（1）成功，则解锁成功 
-（2）失败，说明轻量级锁进行了锁膨胀或已经升级为重量级锁，进入重量级锁解锁流程
+>轻量级锁解锁流程如下（基于使用lock record重入计数的情况）：
+ 遍历栈的Lock Record，如果_displaced_header(存储markword的拷贝) 为 NULL，表明锁是可重入的，跳过不作处理
+ 如果_displaced_header 不为 NULL，即最后一个锁记录，调用 CAS恢复锁对象头的Markword，并恢复为无锁状态，解锁成功
 ### 3.3.3、重量级锁
+
 > 使用场景：如果在尝试加轻量级锁的过程中，CAS 操作无法成功，这时一种情况就是有其它线程为此对象加上了轻量级锁（有竞争），这时需要进行锁膨胀，将轻量级锁变为重量级锁
 
 ![重量级锁](https://yancey-note-img.oss-cn-beijing.aliyuncs.com/202307230931871.jpg)
 
-
-1. 当 Thread-1 进行轻量级加锁时，Thread-0 已经对该对象加了轻量级锁
-2. 这时 Thread-1 加轻量级锁失败，进入锁膨胀流程 
-
-（1）为 Object 对象申请 Monitor 锁，让 Object 指向重量级锁地址 
-（2）然后自己进入 Monitor 的 EntryList阻塞队列
-
-3. 当 Thread-0 退出同步块解锁时，使用 cas 将 Mark Word 的值恢复给对象头，失败。这时会进入重量级解锁流程，即按照 Monitor 地址找到 Monitor 对象，设置 Owner 为 null，唤醒 EntryList 中阻塞线程（不公平）
-
-> 调用wait方法，会将此线程放入到wait set中，然后放弃锁。直到有其它线程调用notify（），才会重新进入entrylist中，重新争夺锁的拥有权
-
-### 3.3.4、自旋锁
-重量级锁竞争的时候，还可以使用自旋(循环尝试获取重量级锁)来进行优化，如果当前线程自旋成功（即这时候持锁线程已经退出了同步块，释放了锁），这时当前线程就可以避免阻塞。 (进入阻塞再恢复,会发生上下文切换,比较耗费性能)
+在Java中，每个对象都有一个监视器锁（monitor）。当一个线程想要访问一个被synchronized修饰的方法或代码块时，它会尝试获取这个对象的监视器锁。如果这个锁没有被其他线程占用，那么这个线程就可以获取这个锁，并执行synchronized修饰的方法或代码块。如果这个锁已经被其他线程占用，那么这个线程就会进入阻塞状态（waitset，entrylist），直到它能够获取这个锁为止
 
 ## 3.4、wait/notify
 Owner 线程发现条件不满足，调用 wait 方法，即可进入 WaitSet 变为 WAITING 状态 。BLOCKED 和 WAITING 的线程都处于阻塞状态，不占用 CPU 时间片 。BLOCKED 线程会在 Owner 线程释放锁时唤醒 。WAITING 线程会在 Owner 线程调用 notify 或 notifyAll 时唤醒，但唤醒后并不意味者立刻获得锁，仍需进入EntryList 重新竞争
@@ -350,6 +390,7 @@ Owner 线程发现条件不满足，调用 wait 方法，即可进入 WaitSet �
 2.  sleep 不需要强制和 synchronized 配合使用，但 wait 需要和 synchronized 一起用 
 3.  sleep 在睡眠的同时，不会释放对象锁的，但 wait 在等待的时候会释放对象锁 
 
+> wait()为什么只能在同步方法中调用？因为wait操作的是monitor
 ## 3.5、park/unpark
 它们是 LockSupport 类中的方法
 ```java
@@ -492,27 +533,25 @@ new Philosopher("阿基米德", c5, c1).start();
 > eg：共享变量count为10000, t1线程while count > 0, count-- ;t2线程while count < 20000, count++ .两个线程同时运行，这样count的值一直无法达到结束循环的条件。两个线程一直在执行
 
 
-## 3.8、**ReentrantLock**
-相对于 synchronized 它具备如下特点 
-
-1. 可中断 
-2. 可以设置超时时间 
-3. 可以设置为公平锁 （默认不公平）
-4. 支持多个条件变量 
-
-与 synchronized 一样，都支持可重入 
 # 4、共享模型之内存
 ## 4.1、java内存模型（jmm）
+
 Java内存模型(即Java Memory Model，简称JMM) 。它是一个规范，JMM定义了线程和主内存之间的抽象关系：线程之间的共享变量存储在主内存（main memory）中，每个线程都有一个私有的本地内存（local memory），本地内存中存储了该线程以读/写共享变量的副本
 ## 4.2、线程安全性的三个体现
+
 **原子性**：原子性指的是一个或多个操作要么全部执行成功要么全部执行失败（一个操作CPU不可被中断）（Atomic、CAS算法、synchronized、Lock）
+
 **可见性**：可见性是指当多个线程访问同一个变量时，一个线程修改了这个变量的值，其他线程能够立即看得到修改的值（synchronized、volatile）
-**有序性**：即程序执行的顺序按照代码的先后顺序执行（happens-before原则）
+>关联到cpu层面其实就是cpu的三级缓存和主内存，一个线程在读取数据时，先从本地内存查询，如果没有，再从主存中查，然后复制到本地内存进行操作，操作完后，会将修改后的数据刷新回主内存。因为现在cpu都是多核的，所以存在多个线程同时操作一个共享变量，但是本地内存中的修改对于其它线程是不可见的
+
+**有序性**：即程序执行的顺序按照代码的先后顺序执行,cpu为了提升执行效率，会进行执行重排 （happens-before原则,volatile）
+
 # 5、共享模型之无锁
 ## 5.1、CAS
 ### 5.1.1、CAS基本概念
 CAS是所有原子类的底层原理，乐观锁主要采用CAS算法。
 CAS，比较并交换，是JDK提供的非阻塞原子性操作，CAS的思想很简单：三个参数，一个当前内存值V、旧的预期值A、即将更新的值B，当且仅当预期值A和内存值V相同时，将内存值修改为B并返回true，否则什么都不做，并返回false。
+
 > 1. CAS利用了处理器的CMPXCHG指令，该指令操作的内存区域就会加锁，导致其他处理器不能同时访问它，保证原子性
 > 2. CAS 必须借助 volatile 才能读取到共享变量的最新值来实现【比较并交换】的效果
 
@@ -560,6 +599,10 @@ write(写入)：将store入主内存的变量,放入到主内存的变量中
 
 # 6、共享模式之工具
 ## 6.1、线程池
+
+1. 线程池可以有效地管理线程：它可以管理线程的数量,做到线程的服用，可以避免无节制的创建线程,导致超出系统负荷直至崩溃
+2. 构造方法的重要参数：corePoolSize（核心线程数）、workQueue（等待队列）、maxinumPoolSize（最大线程数）、handler（拒绝策略）、keepAliveTime（空闲线程存活时间）
+
 ### 6.1.1、**ThreadPoolExecutor**
 
 1. **构造方法**
@@ -586,6 +629,7 @@ write(写入)：将store入主内存的变量,放入到主内存的变量中
 如果线程池中的线程数量大于 corePoolSize时，如果某线程空闲时间超过keepAliveTime，线程将被终止，直至线程池中的线程数目不大于corePoolSize；
 如果当前线程池中的线程数目达到maximumPoolSize，则会采取任务拒绝策略进行处理
 ### 6.1.2、Executors类中提供的工厂方法
+
 根据上面的ThreadPoolExecutor这个构造方法，JDK Executors类中提供了众多工厂方法来创建各种用途的线程池
 
 1. **newFixedThreadPool**
@@ -656,6 +700,15 @@ CPU 不总是处于繁忙状态，例如，当你执行业务计算时，这时�
 经验公式如下 ：
 `线程数 = 核数 * 期望 CPU 利用率 * 总时间(CPU计算时间+等待时间) / CPU 计算时间` 
 
+### 6.1.4、线程池状态
+
+1. RUNNING状态：线程池创建后，初始状态为RUNNING。
+2. SHUTDOWN状态：当调用线程池的shutdown()方法时，线程池进入SHUTDOWN状态。此时线程池不再接受新的任务，但会执行已经提交的任务。当所有任务都执行完毕后，线程池会转换到TIDYING状态。
+3. STOP状态：当调用线程池的shutdownNow()方法时，线程池进入STOP状态。此时线程池不再接受新的任务，并且会中断正在执行的任务。当所有任务都执行完毕后，线程池会转换到TIDYING状态。
+4. TIDYING状态：当线程池处于SHUTDOWN或STOP状态时，所有任务都执行完毕后，线程池会进入TIDYING状态。在此状态下，线程池会进行清理工作，如关闭线程池中的所有线程等。当清理工作完成后，线程池会转换到TERMINATED状态。
+5. TERMINATED状态：线程池处于TERMINATED状态时，表示线程池已经完全终止，所有任务已经执行完毕并且清理工作也已经完成。此时线程池不再能接受新的任务。
+
+
 ## 6.2、锁
 ### 6.2.1、AQS
 
@@ -665,12 +718,14 @@ AbstractQueuedSynchronizer抽象的队列式同步器。是除了java自带的sy
 
 2. 原理 
 
-它维护了一个volatile int state（代表共享资源）和一个FIFO线程等待队列（多线程争用资源被阻塞时会进入此队列），核心思想是，如果被请求的共享资源空闲，则将当前请求资源的线程设置为有效的工作线程，并将共享资源设置为锁定状态，如果被请求的共享资源被占用，那么就将暂时获取不到锁的线程加入到队列中
+它维护了一个volatile int state（代表共享资源）和一个FIFO双向队列（CLH队列，多线程争用资源被阻塞时会进入此队列），核心思想是，如果被请求的共享资源空闲，则将当前请求资源的线程设置为有效的工作线程，并将共享资源设置为锁定状态，如果被请求的共享资源被占用，那么就将暂时获取不到锁的线程加入到等待队列（entrylist）中。如果调用了锁对象的
 AQS定义两种资源共享方式：Exclusive（独占，只有一个线程能执行，如ReentrantLock）和Share（共享，多个线程可同时执行，如Semaphore/CountDownLatch）
+自定义同步器在实现时只需要实现共享资源state的获取与释放方式即可，至于具体线程等待队列的维护（如获取资源失败入队/唤醒出队等），AQS已经在顶层实现好了
 
 3. 实现
 
 自定义同步器在实现时只需要实现共享资源state的获取与释放方式即可，至于具体线程等待队列的维护（如获取资源失败入队/唤醒出队等），AQS已经在顶层实现好了。自定义同步器实现时主要实现以下几种方法：
+
 > **isHeldExclusively()**：该线程是否正在独占资源。只有用到condition才需要去实现它。
 **tryAcquire(int)**：独占方式。尝试获取资源，成功则返回true，失败则返回false。
 **tryRelease(int)**：独占方式。尝试释放资源，成功则返回true，失败则返回false。
@@ -681,6 +736,16 @@ AQS定义两种资源共享方式：Exclusive（独占，只有一个线程能�
 以ReentrantLock为例，state初始化为0，表示未锁定状态。A线程lock()时，会调用tryAcquire()独占该锁并将state+1。此后，其他线程再tryAcquire()时就会失败，直到A线程unlock()到state=0（即释放锁）为止，其它线程才有机会获取该锁。当然，释放锁之前，A线程自己是可以重复获取此锁的（state会累加），这就是可重入的概念。但要注意，获取多少次就要释放多么次，这样才能保证state是能回到零态的
 
 ### 6.2.2、ReentrantLock
+
+相对于 synchronized 它具备如下特点 
+
+1. 可中断 
+2. 可以设置超时时间 
+3. 可以设置为公平锁 （默认不公平）
+4. 支持多个条件变量 
+
+与 synchronized 一样，都支持可重入 
+
 **实现原理**
 
 1. 首先，ReentrantLock实现Lock接口，这样他就向外提供了加锁，解锁，中断锁的基本功能
@@ -698,11 +763,11 @@ ReadLock和WriteLock是ReentrantReadWriteLock的两个内部类，Lock的上锁�
 1. 获取读锁
 
 如果写锁没有被另一个线程持有，则获取读锁并立即返回。     
- 	如果写锁由另一个线程持有，则出于线程调度目的，当前线程将被禁用（unpark），并处于休眠状态，直	到获取读锁为止。
+如果写锁由另一个线程持有，则出于线程调度目的，当前线程将被禁用（unpark），并处于休眠状态，直	到获取读锁为止。
 
 4. 获取写入锁
 
-如果没有其他线程持有读锁或写锁，会直接返回，并将写锁计数设置为1。     *
+如果没有其他线程持有读锁或写锁，会直接返回，并将写锁计数设置为1
 如果当前线程持有写锁，则将写锁计数 +1，然后返回
 如果锁正在被其他线程持有，则当前线程将被禁用，并处于休眠状态，直到获取读锁并将写锁计数设置为1。
 
@@ -720,12 +785,40 @@ ReadLock和WriteLock是ReentrantReadWriteLock的两个内部类，Lock的上锁�
 
 在获取读锁的时候，如果当前线程持有写锁，是可以获取读锁的。这块就是指锁降级，比如线程 A 获取到了写锁，当线程 A 执行完毕时，它需要获取当前数据，假设不支持锁降级，就会导致 A 释放写锁，然后再次请求读锁。而在这中间是有可能被其他阻塞的线程获取到写锁的。从而导致线程 A 在一次执行过程中数据不一致（脏读）
 
+### 6.2.4、锁分类
+
+1. **可重入锁和不可重入锁**
+
+Java中提供的synchronized，ReentrantLock，ReentrantReadWriteLock都是可重入
+重入：当前线程获取到A锁，在获取之后尝试再次获取A锁是可以直接拿到的。
+不可重入：当前线程获取到A锁，在获取之后尝试再次获取A锁，无法获取到的，因为A锁被当前线程占用着，需要等待自己释放锁再获取锁
+
+2. **乐观锁和悲观锁**
+
+Java中提供的synchronized，ReentrantLock，ReentrantReadWriteLock都是悲观锁
+Java中提供的CAS操作，就是乐观锁的一种实现
+悲观锁：获取不到锁资源时，会将当前线程挂起 (进入BLOCKED、WAITING)，线程挂起会涉及到用户态和内核态的切换，而这种切换是比较消耗资源的。
+乐观锁：获取不到锁，再让CPU调度，重新尝试获取锁资源。Automic原子类中，就是基于CAS乐观锁实现的
+
+3. **公平锁和非公平锁**
+
+synchronized是非公平锁
+ReentrantLock和ReentrantReadWriteLock可以实现公平锁和非公平锁
+
+4. **互斥锁和共享锁**
+
+Synchronized，ReentrantLock是互斥锁
+ReentrantReadWriteLock有互斥锁也有共享锁（写互斥读共享）
+互斥锁：同一时间，只有一个线程持有当前互斥锁
+共享锁：同一时间点，多个线程可以共同持有
+
 ## 6.3、工具
 ### 6.3.1、Semaphore
 
 1. **概念**
 
 Semaphore（信号量）是用来控制同时访问特定资源的线程数量，它通过协调各个线程，以保证合理的使用公共资源（Semaphore可以用于做流量控制，特别是公用资源有限的应用场景，比如数据库连接）
+
 ```java
 public class DataSourcePool {
  
