@@ -2,15 +2,6 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>https://www.guoyancheng.com/posts/10777.html</loc>
-    
-    <lastmod>2024-03-01</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
     <loc>https://www.guoyancheng.com/posts/36971.html</loc>
     
     <lastmod>2024-03-01</lastmod>
@@ -128,9 +119,9 @@
   </url>
   
   <url>
-    <loc>https://www.guoyancheng.com/posts/28223.html</loc>
+    <loc>https://www.guoyancheng.com/posts/10777.html</loc>
     
-    <lastmod>2023-12-06</lastmod>
+    <lastmod>2024-03-01</lastmod>
     
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -149,15 +140,6 @@
     <loc>https://www.guoyancheng.com/about/index.html</loc>
     
     <lastmod>2023-11-22</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.guoyancheng.com/posts/41682.html</loc>
-    
-    <lastmod>2023-11-12</lastmod>
     
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -248,6 +230,24 @@
     <loc>https://www.guoyancheng.com/posts/43456.html</loc>
     
     <lastmod>2023-04-12</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.guoyancheng.com/posts/28223.html</loc>
+    
+    <lastmod>2022-12-06</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.guoyancheng.com/posts/41682.html</loc>
+    
+    <lastmod>2022-11-12</lastmod>
     
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
