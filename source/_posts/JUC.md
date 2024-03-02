@@ -1,6 +1,6 @@
 ---
 title: juc
-date: 2023/07/15
+date: 2022/07/15
 categories:
   - coding
 tags:
@@ -348,14 +348,16 @@ Monitor 被翻译为**监视器**或**管程**
 
 对齐填充：由于虚拟机要求 对象起始地址必须是8字节的整数倍。填充数据不是必须存在的，仅仅是为了字节对齐。
 
-## 3.3、synchronized升级
+## 3.3、synchronized
 
-### 3.3.1、偏向锁
+### 3.3.1、synchronized锁升级
+
+#### 3.3.1.1、偏向锁
 
 > 使用场景：如果只有一个线程，就不需要每次的申请释放锁
 
 只有第一次使用 CAS 将线程 ID 设置到对象的 Mark Word 头，之后发现这个线程 ID 是自己的就表示没有竞争，不用重新 CAS。以后只要不发生竞争，这个对象就归该线程所有 
-### 3.3.2、轻量级锁
+#### 3.3.1.2、轻量级锁
 
 > 使用场景：有时候会存在多个线程访问同步代码的情况，但每个线程执行的时间很短，这时候没必要阻塞等待，通过自旋来等待
 
@@ -373,13 +375,19 @@ Monitor 被翻译为**监视器**或**管程**
 >轻量级锁解锁流程如下（基于使用lock record重入计数的情况）：
  遍历栈的Lock Record，如果_displaced_header(存储markword的拷贝) 为 NULL，表明锁是可重入的，跳过不作处理
  如果_displaced_header 不为 NULL，即最后一个锁记录，调用 CAS恢复锁对象头的Markword，并恢复为无锁状态，解锁成功
-### 3.3.3、重量级锁
+#### 3.3.1.3、重量级锁
 
 > 使用场景：如果在尝试加轻量级锁的过程中，CAS 操作无法成功，这时一种情况就是有其它线程为此对象加上了轻量级锁（有竞争），这时需要进行锁膨胀，将轻量级锁变为重量级锁
 
 ![重量级锁](https://yancey-note-img.oss-cn-beijing.aliyuncs.com/202307230931871.jpg)
 
 在Java中，每个对象都有一个监视器锁（monitor）。当一个线程想要访问一个被synchronized修饰的方法或代码块时，它会尝试获取这个对象的监视器锁。如果这个锁没有被其他线程占用，那么这个线程就可以获取这个锁，并执行synchronized修饰的方法或代码块。如果这个锁已经被其他线程占用，那么这个线程就会进入阻塞状态（waitset，entrylist），直到它能够获取这个锁为止
+
+### 3.3.2、synchronized使用
+
+![image.png|725](https://yancey-note-img.oss-cn-beijing.aliyuncs.com/202312211615519.png)
+
+
 
 ## 3.4、wait/notify
 Owner 线程发现条件不满足，调用 wait 方法，即可进入 WaitSet 变为 WAITING 状态 。BLOCKED 和 WAITING 的线程都处于阻塞状态，不占用 CPU 时间片 。BLOCKED 线程会在 Owner 线程释放锁时唤醒 。WAITING 线程会在 Owner 线程调用 notify 或 notifyAll 时唤醒，但唤醒后并不意味者立刻获得锁，仍需进入EntryList 重新竞争
@@ -758,6 +766,11 @@ Condition 是一个多线程协调通信的工具类，作用类似于synchroniz
 ### 6.2.3、**ReentrantReadWriteLock**
 #### 4.2.3.1、ReentrantReadWriteLock基本概念
 ReadLock和WriteLock是ReentrantReadWriteLock的两个内部类，Lock的上锁和释放锁都是通过一个AQS同步器sync来实现的。将 state 的 高 16 位和低 16 位拆开表示读写锁。其中高 16 位表示读锁，低 16 位表示写锁。读锁，允许共享；写锁，是独占锁。适合在读多写少的场景中使用
+
+ReadWriteLock也是一个接口，提供了readLock和writeLock两种锁的操作机制，一个资源可以被多个线程同时读，或者被一个线程写，但是不能同时存在读和写线程。
+读锁：共享锁 readLock
+写锁：独占锁 writeLock
+读写锁 ： 一个资源可以被多个读的线程进行访问 ，或者可以被一个写的线程访问，但是不能同时存在读和写进程 ，读写互斥，读读共享。
 #### 4.2.3.2、锁获取过程
 
 1. 获取读锁

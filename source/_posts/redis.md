@@ -1,6 +1,6 @@
 ---
 title: redis
-date: 2023/08/07
+date: 2022/08/07
 categories:
   - coding
 tags:
@@ -794,7 +794,7 @@ aof写数据策略：
 
 ## 4.2、redis数据删除策略
 
-### 4.2.1、定时删除
+### 4.2.1、立即删除
 方式：创建一个定时器,当设置的key到达到期时间时,由定时器任务立即执行对key的删除操作
 
 优缺点：
@@ -916,7 +916,7 @@ PUBLISH channel1 "Redis PUBLISH test"
 
 1. 通过`set...nx...`命令,将加锁、过期命令编排到一起,把他们变成原子操作。完整命令：set key random-value nx ex seconds
 
-> 其实目前通常所说的Setnx命令，并非单指Redis的setnx key value这条命令。
+> 其实目前通常所说的Setnx命令，并非单指Redis的setnx key value这条命令
 > 一般代指Redis中对set命令加上nx参数进行使用
 
 > （1）nx  ex 是set指令的两个参数： ex过期时间    nx只有key不存在时设置新的key/value
@@ -980,18 +980,18 @@ public class RedisLock {
 
 
 ## 4.8、redis和数据库的双写一致性
-更新数据库和更新redis不是一个原子操作。所以根据业务场景有两种方案：
 
-1.保证最终一致性（可以接受数据短期不一致）
+假设有 A、B 两个并发请求：
 
-先更新数据库，再更新redis。第二步更新redis失败的请求异步写入mq消息队列，利用mq的重试机制进行更新
-
-![image.png|500](https://yancey-note-img.oss-cn-beijing.aliyuncs.com/202311141021779.png)
+- 先更新数据库再删除缓存：当请求 A 更新数据库之后，还未来得及进行缓存清除，此时请求 B 查询到并使用了 Cache 中的旧数据。
+- 先删除缓存再更新数据库：当请求 A 执行清除缓存后，还未进行数据库更新，此时请求 B 进行查询，查到了旧数据并写入了 Cache
 
 
-2.强一致性保证
+1. 延迟双删
 
-使用读写锁，在数据更新的时候，其它任何请求都无法访问缓存中的数据
+![image.png](https://yancey-note-img.oss-cn-beijing.aliyuncs.com/202312211801651.png)
 
-![image.png|500](https://yancey-note-img.oss-cn-beijing.aliyuncs.com/202311141022655.png)
 
+延迟双删是这样：先执行缓存清除操作，再执行数据库更新操作，延迟 N 秒之后再执行一次缓存清除操作，这样就不用担心缓存中的数据和数据库中的数据不一致了
+
+一般来说，N 要大于一次写入缓存操作的时间，如果延迟时间小于写入缓存的时间，会导致请求 A 已经延迟清除了缓存，但是此时请求 B 缓存还未写入，具体是多少，就要结合自己的业务来统计这个数值了

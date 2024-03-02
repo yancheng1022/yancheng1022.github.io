@@ -1,6 +1,6 @@
 ---
 title: spring boot
-date: 2023/11/06
+date: 2022/11/06
 categories:
   - coding
 tags:
@@ -422,6 +422,7 @@ Spring在TransactionDefinition接口中规定了7种类型的事务传播行为�
 1.@Transactional 注解应该只被应用在 public 修饰的方法上(注意)。 如果在 protected、private 或者 package-visible 的方法上使用 该注解，它也不会报错(IDEA会有提示)， 但事务并没有生效
 
 2.@Transactional是基于动态代理的(注意)，需要一个类调用另一个类，类内调用会失效
+
 > 当在类的内部调用被@Transactional注解修饰的方法时，实际上是通过类的实例直接调用方法，而不是通过代理对象。这样做会绕过代理对象，从而导致@Transactional注解失效
 
 3.事务@Transactional由spring控制时，它会在抛出异常的时候进行回滚。如果自己使用try-catch捕获处理了，是不生效的。如果想事务生效可以进行手动回滚或者在catch里面将异常抛出throw new RuntimeException()
@@ -865,11 +866,12 @@ public class MyListener4{
 
 ## 10.2、spring解决循环依赖问题
 
-| **缓存** | **说明** |
-| --- | --- |
-| singletonObjects | 第一级缓存，存放可用的成品Bean。 |
+| **缓存**                | **说明**                                                |
+| --------------------- | ----------------------------------------------------- |
+| singletonObjects      | 第一级缓存，存放可用的成品Bean。                                    |
 | earlySingletonObjects | 第二级缓存，存放半成品的Bean，半成品的Bean是已创建对象，但是未注入属性和初始化。用以解决循环依赖。 |
-| singletonFactories | 第三级缓存，存的是Bean工厂对象，用来生成半成品的Bean并放入到二级缓存中。用以解决循环依赖。 |
+| singletonFactories    | 第三级缓存，存的是Bean工厂对象，用来生成半成品的Bean并放入到二级缓存中。用以解决循环依赖。     |
+|                       |                                                       |
 
 1. A 调用doCreateBean()创建Bean对象：由于还未创建，从第1级缓存singletonObjects查不到，此时只是一个半成品（提前暴露的对象），放入第3级缓存singletonFactories。
 2. A在属性填充时发现自己需要B对象，但是在三级缓存中均未发现B，于是创建B的半成品，放入第3级缓存singletonFactories。

@@ -1,6 +1,6 @@
 ---
 title: nginx
-date: 2023/07/15
+date: 2022/07/15
 categories:
   - coding
 tags:

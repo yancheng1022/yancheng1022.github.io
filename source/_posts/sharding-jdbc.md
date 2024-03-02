@@ -1,7 +1,7 @@
 ---
 title: sharding-jdbc
-date: 2023/09/13
-updated: 2023/09/13
+date: 2023/04/13
+updated: 2023/04/13
 categories:
   - coding
 tags:
