@@ -354,7 +354,7 @@ public class SeataAutoConfig {
 
 ```
 
-## 3.3、业务代码增加
+## 3.3、业务代码增加@GlobalTransactional
 
 ```java
 	@GlobalTransactional(timeoutMills = 300000, name = "dubbo-gts-seata-example")
