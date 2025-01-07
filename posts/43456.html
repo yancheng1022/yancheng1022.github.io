@@ -1,0 +1,259 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>sharding-jdbc | GuoYancheng</title><meta name="author" content="Yancheng Guo"><meta name="copyright" content="Yancheng Guo"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="referrer" content="no-referrer"><meta name="description" content="1、基本概念分库分表就是为了解决由于数据量过大而导致数据库性能降低的问题，将原来独立的数据库拆分成若干数据库组成 ，将数据大表拆分成若干数据表组成，使得单一数据库、单一数据表的数据量变小，从而达到提升数据库性能的目的。分库分表分为分库和分表两部分，通常分为垂直分库、垂直分表、水平分库、水平分表 1.1、垂直分库垂直分库是指按照业务将表进行分类，分布到不同的数据库上面，每个库可以放在不同的服务器上。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="sharding-jdbc">
+<meta property="og:url" content="https://www.guoyancheng.com/posts/43456.html">
+<meta property="og:site_name" content="GuoYancheng">
+<meta property="og:description" content="1、基本概念分库分表就是为了解决由于数据量过大而导致数据库性能降低的问题，将原来独立的数据库拆分成若干数据库组成 ，将数据大表拆分成若干数据表组成，使得单一数据库、单一数据表的数据量变小，从而达到提升数据库性能的目的。分库分表分为分库和分表两部分，通常分为垂直分库、垂直分表、水平分库、水平分表 1.1、垂直分库垂直分库是指按照业务将表进行分类，分布到不同的数据库上面，每个库可以放在不同的服务器上。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://www.guoyancheng.com/img/avatar.jpg">
+<meta property="article:published_time" content="2023-04-12T16:00:00.000Z">
+<meta property="article:modified_time" content="2023-04-12T16:00:00.000Z">
+<meta property="article:author" content="Yancheng Guo">
+<meta property="article:tag" content="编程基础">
+<meta property="article:tag" content="sharding-jdbc">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://www.guoyancheng.com/img/avatar.jpg"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://www.guoyancheng.com/posts/43456.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><meta name="baidu-site-verification" content="&lt;meta name=&quot;baidu-site-verification&quot; content=&quot;codeva-w6PavDHB8h&quot; /&gt;"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"找不到您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":false,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'sharding-jdbc',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2023-04-13 00:00:00'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+    win.getCSS = (url,id = false) => new Promise((resolve, reject) => {
+      const link = document.createElement('link')
+      link.rel = 'stylesheet'
+      link.href = url
+      if (id) link.id = id
+      link.onerror = reject
+      link.onload = link.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        link.onload = link.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(link)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><link rel="stylesheet" href="/css/custom.css" media="defer" onload="this.media='all'"><meta name="generator" content="Hexo 6.3.0"></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/avatar.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">30</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">46</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">2</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="not-top-img" id="page-header"><nav id="nav"><span id="blog-info"><a href="/" title="GuoYancheng"><span class="site-name">GuoYancheng</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav></header><main class="layout" id="content-inner"><div id="post"><div id="post-info"><h1 class="post-title">sharding-jdbc</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2023-04-12T16:00:00.000Z" title="发表于 2023-04-13 00:00:00">2023-04-13</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2023-04-12T16:00:00.000Z" title="更新于 2023-04-13 00:00:00">2023-04-13</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/coding/">coding</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">2.9k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>9分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="sharding-jdbc"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div><article class="post-content" id="article-container"><h1 id="1、基本概念"><a href="#1、基本概念" class="headerlink" title="1、基本概念"></a>1、基本概念</h1><p>分库分表就是为了解决由于数据量过大而导致数据库性能降低的问题，将原来独立的数据库拆分成若干数据库组成 ，将数据大表拆分成若干数据表组成，使得单一数据库、单一数据表的数据量变小，从而达到提升数据库性能的目的。分库分表分为分库和分表两部分，通常分为垂直分库、垂直分表、水平分库、水平分表</p>
+<h2 id="1-1、垂直分库"><a href="#1-1、垂直分库" class="headerlink" title="1.1、垂直分库"></a>1.1、垂直分库</h2><p>垂直分库是指按照业务将表进行分类，分布到不同的数据库上面，每个库可以放在不同的服务器上。例如，将用户信息表和订单信息表分别存储在不同的数据库中，以减轻单个数据库的负载压力</p>
+<h2 id="1-2、水平分库"><a href="#1-2、水平分库" class="headerlink" title="1.2、水平分库"></a>1.2、水平分库</h2><p>水平分库是将一个表的数据按照某个条件（例如，按照用户ID的范围或哈希值）分散存储在多个数据库中。每个数据库只存储部分数据。这样可以将数据库负载均衡，并提高查询性能。例如，将用户信息根据用户ID的哈希值分散存储在不同的数据库中</p>
+<h2 id="1-3、垂直分表"><a href="#1-3、垂直分表" class="headerlink" title="1.3、垂直分表"></a>1.3、垂直分表</h2><p>垂直分表是将一个表按照列的方式进行拆分，将不同的列存储在不同的表中。每个表负责存储特定的列数据。这样可以降低单个表的数据量和表的宽度，提高查询性能。例如，将用户表拆分为用户基本信息表和用户扩展信息表，分别存储基本信息和扩展信息</p>
+<h2 id="1-4、水平分表"><a href="#1-4、水平分表" class="headerlink" title="1.4、水平分表"></a>1.4、水平分表</h2><p>水平分表是将一个表的数据按照某个条件（例如，按照时间范围或哈希值）分散存储在多个表中。每个表只存储部分数据。这样可以将表的数据量减小，提高查询性能。例如，将订单表按照订单创建时间的范围拆分为多个表，每个表存储一段时间内的订单数据。</p>
+<h2 id="1-5、分库分表带来的问题"><a href="#1-5、分库分表带来的问题" class="headerlink" title="1.5、分库分表带来的问题"></a>1.5、分库分表带来的问题</h2><ol>
+<li>事务一致性问题：由于分库分表把数据分布在不同库甚至不同服务器，不可避免会带来分布式事务问题</li>
+<li>跨节点关联查询：但垂直分库后和不在一个数据库，甚至不在一台服务器，无法进行关联查询</li>
+<li>跨节点分页，排序函数：跨节点多库进行查询时，limit分页、order by排序等问题，就变得比较复杂了</li>
+<li>主键避重：在分库分表环境中，由于表中数据同时存在不同数据库中，主键值平时使用的自增长将无用武之地，某个分区数据库生成的ID无法保证全局唯一。因此需要单独设计全局主键，以避免跨库主键重复问题</li>
+</ol>
+<h1 id="2、sharding-jdbc相关概念"><a href="#2、sharding-jdbc相关概念" class="headerlink" title="2、sharding-jdbc相关概念"></a>2、sharding-jdbc相关概念</h1><p>Sharding-JDBC是ShardingSphere的第一个产品，也是ShardingSphere的前身。 它定位为轻量级Java框架，在Java的JDBC层提供的额外服务。它使用客户端直连数据库，以jar包形式提供服务，无需额外部署和依赖，可理解为增强版的JDBC驱动，完全兼容JDBC和各种ORM框架</p>
+<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">sharding:</span>  </span><br><span class="line">    <span class="comment"># 配置绑定表,分片键一致，关联查询时不会笛卡尔  </span></span><br><span class="line">    <span class="string">binding-tables[0]:</span> <span class="string">ims_test_result,ims_test_sample_fetch</span> </span><br><span class="line">    <span class="attr">tables:</span>  </span><br><span class="line">        <span class="attr">ims_sample_base:</span>  </span><br><span class="line">            <span class="attr">actual-data-nodes:</span> <span class="string">m1.ims_sample_base_202308,m1.ims_sample_base_202309</span> </span><br><span class="line">            <span class="attr">key-generator:</span>  </span><br><span class="line">                <span class="attr">column:</span> <span class="string">id</span>  </span><br><span class="line">                <span class="attr">type:</span> <span class="string">SNOWFLAKE</span>  </span><br><span class="line">            <span class="attr">table-strategy:</span>  </span><br><span class="line">                <span class="attr">complex:</span>  </span><br><span class="line">                    <span class="attr">sharding-columns:</span> <span class="string">submit_work_time,sample_uid</span>  </span><br><span class="line">                    <span class="attr">algorithm-class-name:</span> <span class="string">com.chivd.common.algorithm.TableShardingSampleAlgorithm</span></span><br></pre></td></tr></table></figure>
+<h2 id="2-1、逻辑表"><a href="#2-1、逻辑表" class="headerlink" title="2.1、逻辑表"></a>2.1、逻辑表</h2><p>未参与分片（不带后缀等信息）的表，实际数据库中并不存在。如ims_sample_base</p>
+<h2 id="2-2、真实表"><a href="#2-2、真实表" class="headerlink" title="2.2、真实表"></a>2.2、真实表</h2><p>在分片的数据库中真实存在的物理表。如ims_sample_base_202308</p>
+<h2 id="2-3、数据节点"><a href="#2-3、数据节点" class="headerlink" title="2.3、数据节点"></a>2.3、数据节点</h2><p>数据分片的最小单元。由数据源名称和数据表组成。如m1.ims_sample_base_202309</p>
+<h2 id="2-4、绑定表"><a href="#2-4、绑定表" class="headerlink" title="2.4、绑定表"></a>2.4、绑定表</h2><p>指分片规则一致的主表和子表。例如: t_order表和t_order_item表，均按照order_id分片，则此两张表互为绑定表关系。绑定表之间的多表关联查询不会出现笛卡尔积关联，关联查询效率将大大提升</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> i.<span class="operator">*</span> <span class="keyword">FROM</span> t_order o <span class="keyword">JOIN</span> t_order_item i <span class="keyword">ON</span> o.order_id<span class="operator">=</span>i.order_id <span class="keyword">WHERE</span> o.order_id <span class="keyword">in</span> (<span class="number">10</span>, <span class="number">11</span>);</span><br><span class="line"></span><br><span class="line">在不配置绑定表关系时，假设分片键order_id将数值<span class="number">10</span>路由至第<span class="number">0</span>片，将数值<span class="number">11</span>路第<span class="number">1</span>片，那么路由后的SOL应该为<span class="number">4</span>条，它们呈现为笛卡尔积:</span><br><span class="line"><span class="keyword">SELECT</span> i.<span class="operator">*</span> <span class="keyword">FROM</span> t_order_0 o <span class="keyword">JOIN</span> t_order_item_0 i <span class="keyword">ON</span> o.order_id<span class="operator">=</span>i.order_id <span class="keyword">WHERE</span> o.order_id <span class="keyword">in</span> (<span class="number">10</span>, <span class="number">11</span>);</span><br><span class="line"><span class="keyword">SELECT</span> i.<span class="operator">*</span> <span class="keyword">FROM</span> t_order_0 o <span class="keyword">JOIN</span> t_order_item_1 i <span class="keyword">ON</span> o.order_id<span class="operator">=</span>i.order_id <span class="keyword">WHERE</span> o.order_id <span class="keyword">in</span> (<span class="number">10</span>, <span class="number">11</span>);</span><br><span class="line"><span class="keyword">SELECT</span> i.<span class="operator">*</span> <span class="keyword">FROM</span> t_order_1 o <span class="keyword">JOIN</span> t_order_item_0 i <span class="keyword">ON</span> o.order_id<span class="operator">=</span>i.order_id <span class="keyword">WHERE</span> o.order_id <span class="keyword">in</span> (<span class="number">10</span>, <span class="number">11</span>);</span><br><span class="line"><span class="keyword">SELECT</span> i.<span class="operator">*</span> <span class="keyword">FROM</span> t_order_1 o <span class="keyword">JOIN</span> t_order_item_1 i <span class="keyword">ON</span> o.order_id<span class="operator">=</span>i.order_id <span class="keyword">WHERE</span> o.order_id <span class="keyword">in</span> (<span class="number">10</span>, <span class="number">11</span>);</span><br><span class="line"></span><br><span class="line">绑定表关系后，路由<span class="keyword">sql</span>为两条：</span><br><span class="line"><span class="keyword">SELECT</span> i.<span class="operator">*</span> <span class="keyword">FROM</span> t_order_0 o <span class="keyword">JOIN</span> t_order_item_0 i <span class="keyword">ON</span> o.order_id<span class="operator">=</span>i.order_id <span class="keyword">WHERE</span> o.order_id <span class="keyword">in</span> (<span class="number">10</span>, <span class="number">11</span>);</span><br><span class="line"><span class="keyword">SELECT</span> i.<span class="operator">*</span> <span class="keyword">FROM</span> t_order_1 o <span class="keyword">JOIN</span> t_order_item_1 i <span class="keyword">ON</span> o.order_id<span class="operator">=</span>i.order_id <span class="keyword">WHERE</span> o.order_id <span class="keyword">in</span> (<span class="number">10</span>, <span class="number">11</span>);</span><br><span class="line"></span><br><span class="line">其中t_order在<span class="keyword">FROM</span>的最左侧，ShardingSphere将会以它作为整个绑定表的主表。 所有路由计算将会只使用主表的策略，那么t_order_item表的分片计算将会使用t_order的条件。故绑定表之间的分区键要完全相同</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-5、五种分片策略"><a href="#2-5、五种分片策略" class="headerlink" title="2.5、五种分片策略"></a>2.5、五种分片策略</h2><ol>
+<li>none：不分片策略。对应NoneShardingStrategy ，不分片策略,SQL会被发给所有节点去执行,这个规则没有子项目可以配置。、</li>
+<li>inline：行表达式分片策略。对应InlineShardingStrategy。使用Groovy的表达式，提供对SQL语句中的&#x3D;和IN的分片操作支持.只支持单分片键。对于简单的分片算法，可以通过简单的配置使用，从而避免繁琐的Java代码开发，如: t_user_$-&gt;{u_id % 8}表示t_user表根据u_id模8，而分成8张表，表名称为t_user_0到t_user_7</li>
+</ol>
+<blockquote>
+<p>行表达式语法：<br>${begin..end}表示范围区间<br>${[unit1,unit2,unit3]}表示枚举值<br>行表达式中如果出现连续多个$ { expression }或$-&gt;{expression}表达式，整个表达式最终结果将根据每个子表达式结果进行笛卡尔组合</p>
+</blockquote>
+<ol start="3">
+<li>standard 标准分片策略</li>
+</ol>
+<p>对应StandardShardingStrategy。提供对SQL语句中的&#x3D;,IN和BETWEENAND的分片操作支持。StandardShardingStrategy只支持单分片键，提供PreciseShardingAlgorithm和RangeShardingAlgorithm两个分片算法。PreciseShardingAlgorithm是必选的，用于处理&#x3D;和IN的分片。RangeShardingAlgorithm是可选的，用于处理BETWEEN AND分片，如果不配置RangeShardingAlgorithm,SQL中的BETWEENAND将按照全库路由处理</p>
+<ol start="4">
+<li>complex复合分片策略</li>
+</ol>
+<p>对应ComplexShardingStrategy。复合分片策略提供对SQL语句中的&#x3D;,IN和BETWEEN AND的分片操作支持。ComplexShardingStrategy支持多分片键，由于多分片键之间的关系复杂，因此并未进行过多的封装，而是直接将分片键值组合以及分片操作符透传至分片算法，完全由应用开发者实现，提供最大的灵活度</p>
+<ol start="5">
+<li>hint分片策略</li>
+</ol>
+<p>对应HintShardingStrategy。通过Hint而非SQL解析的方式分片的策略。对于分片字段非SQL决定，而由其他外置条件决定的场景，可使用SQL Hint灵活的注入分片字段。例:内部系统，按照员工登录主键分库，而数据库中并无此字段。SQL Hint支持通过JavaAPI和SQL注释(待实现)两种方式使用。</p>
+<h2 id="2-6、主键生成策略"><a href="#2-6、主键生成策略" class="headerlink" title="2.6、主键生成策略"></a>2.6、主键生成策略</h2><p>shardingSphere提供灵活的配置分布式主键生成策略方式的主键生成策略，默认使用雪花算法 (snowflake) 生成64bit的长整型数据。当前提供了SNOWFLAKE、UUID 两种可用方式。</p>
+<h2 id="2-7、事务处理"><a href="#2-7、事务处理" class="headerlink" title="2.7、事务处理"></a>2.7、事务处理</h2><p>有两种，一种是local，一种是XA（基于Atomikas来实现），还有一种未实现的柔性事务。其中如果不跨库，则选择local，否则则选择XA</p>
+<p><img src="https://yancey-note-img.oss-cn-beijing.aliyuncs.com/202309161714644.png" alt="sharding-jdbc事务处理"></p>
+<h1 id="3、基本原理"><a href="#3、基本原理" class="headerlink" title="3、基本原理"></a>3、基本原理</h1><p>当Sharding-JDBC接受到一条SQL语句时，会陆续执行 SQL解析 &#x3D;&gt; 查询优化 &#x3D;&gt; SQL路由 &#x3D;&gt; SQL改写 &#x3D;&gt; SQL执行 &#x3D;&gt; 结果归并 ，最终返回执行结果</p>
+<h2 id="3-1、sql解析"><a href="#3-1、sql解析" class="headerlink" title="3.1、sql解析"></a>3.1、sql解析</h2><p>SQL解析过程分为<strong>词法解析</strong>和<strong>语法解析</strong>。<br>词法解析器用于将SQL拆解为不可再分的原子符号，称为Token。并根据不同数据库方言所提供的字典，将其归类为关键字，表达式，字面量和操作符。 再使用语法解析器将SQL转换为抽象语法树。<br>例如，以下SQL：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> id, name <span class="keyword">FROM</span> t_user <span class="keyword">WHERE</span> status <span class="operator">=</span> <span class="string">&#x27;ACTIVE&#x27;</span> <span class="keyword">AND</span> age <span class="operator">&gt;</span> <span class="number">18</span></span><br></pre></td></tr></table></figure>
+
+<p>解析之后的为抽象语法树见下图：</p>
+<p><img src="https://yancey-note-img.oss-cn-beijing.aliyuncs.com/202309161722674.png" alt="image.png"></p>
+<p>为了便于理解，抽象语法树中的关键字的Token用绿色表示，变量的Token用红色表示，灰色表示需要进一步拆分</p>
+<h2 id="3-2、sql路由"><a href="#3-2、sql路由" class="headerlink" title="3.2、sql路由"></a>3.2、sql路由</h2><p>SQL路由就是把针对逻辑表的数据操作映射到对数据结点操作的过程。根据解析上下文匹配数据库和表的分片策略，并生成路由路径</p>
+<ol>
+<li>对于携带分片键的sql</li>
+</ol>
+<blockquote>
+<ol>
+<li>根据分片键操作符不同可以划分为单片路由(分片键的操作符是等号)、多片路由(分片键的操作符是IN)和范围路由(分片键的操作符是 BETWEEN)</li>
+<li>根据分片键进行路由的效果可分为直接路由、标准路由、笛卡尔路由等标准路由是Sharding-Jdbc最为推荐使用的分片方式，它的适用范围是不包含关联查询或仅包含绑定表之间关联查询的SQL。 当分片运算符是等于号时，路由结果将落入单库（表），当分片运算符是BETWEEN或IN时，则路由结果不一定落入唯一的库（表），因此一条逻辑SQL最终可能被拆分为多条用于执行的真实SQL.笛卡尔路由是最复杂的情况，它无法根据绑定表的关系定位分片规则，因此非绑定表之间的关联查询需要拆解为笛卡尔积组合执行</li>
+</ol>
+</blockquote>
+<ol start="2">
+<li>不携带分片键的sql则采用广播路由</li>
+</ol>
+<h2 id="3-3、sql改写"><a href="#3-3、sql改写" class="headerlink" title="3.3、sql改写"></a>3.3、sql改写</h2><p>工程师面向逻辑表书写的SQL，并不能够直接在真实的数据库中执行，SQL改写用于将逻辑SQL改写为在真实数据库中可以正确执行的SQL</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">如一个简单的例子，若逻辑<span class="keyword">SQL</span>为：</span><br><span class="line"><span class="keyword">SELECT</span> order_id <span class="keyword">FROM</span> t_order <span class="keyword">WHERE</span> order_id<span class="operator">=</span><span class="number">1</span>;</span><br><span class="line">假设该<span class="keyword">SQL</span>配置分片键order_id，并且order_id<span class="operator">=</span><span class="number">1</span>的情况，将路由至</span><br><span class="line">分片表<span class="number">1</span>。那么改写之后的<span class="keyword">SQL</span>应该为：</span><br><span class="line"><span class="keyword">SELECT</span> order_id <span class="keyword">FROM</span> t_order_1 <span class="keyword">WHERE</span> order_id<span class="operator">=</span><span class="number">1</span>;</span><br></pre></td></tr></table></figure>
+
+<h2 id="3-4、sql执行"><a href="#3-4、sql执行" class="headerlink" title="3.4、sql执行"></a>3.4、sql执行</h2><p>Sharding-JDBC采用一套自动化的执行引擎，负责将路由和改写完成之后的真实SQL安全且高效发送到底层数据源执行。 </p>
+<p>它不是简单地将SQL通过JDBC直接发送至数据源执行；也并非直接将执行请求放入线程池去并发执行。它更关注平衡数据源连接创建以及内存占用所产生的消耗，以及最大限度地合理利用并发等问题</p>
+<h2 id="3-5、结果归并"><a href="#3-5、结果归并" class="headerlink" title="3.5、结果归并"></a>3.5、结果归并</h2><p>将从各个数据节点获取的多数据结果集，组合成为一个结果集并正确的返回至请求客户端，称为结果归并。</p>
+<p>Sharding-JDBC支持的结果归并从功能上可分为遍历、排序、分组、分页和聚合5种类型</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="https://www.guoyancheng.com">Yancheng Guo</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="https://www.guoyancheng.com/posts/43456.html">https://www.guoyancheng.com/posts/43456.html</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://www.guoyancheng.com" target="_blank">GuoYancheng</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E7%BC%96%E7%A8%8B%E5%9F%BA%E7%A1%80/">编程基础</a><a class="post-meta__tags" href="/tags/sharding-jdbc/">sharding-jdbc</a></div><div class="post_share"><div class="social-share" data-image="/img/avatar.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/posts/46453.html" title="Redisson 框架中的分布式锁"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">Redisson 框架中的分布式锁</div></div></a></div><div class="next-post pull-right"><a href="/posts/28223.html" title="汽车"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">汽车</div></div></a></div></nav><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div class="vcomment" id="vcomment"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content is-expand"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#1%E3%80%81%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5"><span class="toc-text">1、基本概念</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-1%E3%80%81%E5%9E%82%E7%9B%B4%E5%88%86%E5%BA%93"><span class="toc-text">1.1、垂直分库</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-2%E3%80%81%E6%B0%B4%E5%B9%B3%E5%88%86%E5%BA%93"><span class="toc-text">1.2、水平分库</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-3%E3%80%81%E5%9E%82%E7%9B%B4%E5%88%86%E8%A1%A8"><span class="toc-text">1.3、垂直分表</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-4%E3%80%81%E6%B0%B4%E5%B9%B3%E5%88%86%E8%A1%A8"><span class="toc-text">1.4、水平分表</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-5%E3%80%81%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8%E5%B8%A6%E6%9D%A5%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-text">1.5、分库分表带来的问题</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2%E3%80%81sharding-jdbc%E7%9B%B8%E5%85%B3%E6%A6%82%E5%BF%B5"><span class="toc-text">2、sharding-jdbc相关概念</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#2-1%E3%80%81%E9%80%BB%E8%BE%91%E8%A1%A8"><span class="toc-text">2.1、逻辑表</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-2%E3%80%81%E7%9C%9F%E5%AE%9E%E8%A1%A8"><span class="toc-text">2.2、真实表</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-3%E3%80%81%E6%95%B0%E6%8D%AE%E8%8A%82%E7%82%B9"><span class="toc-text">2.3、数据节点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-4%E3%80%81%E7%BB%91%E5%AE%9A%E8%A1%A8"><span class="toc-text">2.4、绑定表</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-5%E3%80%81%E4%BA%94%E7%A7%8D%E5%88%86%E7%89%87%E7%AD%96%E7%95%A5"><span class="toc-text">2.5、五种分片策略</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-6%E3%80%81%E4%B8%BB%E9%94%AE%E7%94%9F%E6%88%90%E7%AD%96%E7%95%A5"><span class="toc-text">2.6、主键生成策略</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-7%E3%80%81%E4%BA%8B%E5%8A%A1%E5%A4%84%E7%90%86"><span class="toc-text">2.7、事务处理</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#3%E3%80%81%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86"><span class="toc-text">3、基本原理</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#3-1%E3%80%81sql%E8%A7%A3%E6%9E%90"><span class="toc-text">3.1、sql解析</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-2%E3%80%81sql%E8%B7%AF%E7%94%B1"><span class="toc-text">3.2、sql路由</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-3%E3%80%81sql%E6%94%B9%E5%86%99"><span class="toc-text">3.3、sql改写</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-4%E3%80%81sql%E6%89%A7%E8%A1%8C"><span class="toc-text">3.4、sql执行</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-5%E3%80%81%E7%BB%93%E6%9E%9C%E5%BD%92%E5%B9%B6"><span class="toc-text">3.5、结果归并</span></a></li></ol></li></ol></div></div></div></div></main><footer id="footer" style="background: #f0f0f0"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2025 By Yancheng Guo</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"><script>function loadValine () {
+  function initValine () {
+    const valine = new Valine(Object.assign({
+      el: '#vcomment',
+      appId: 'OEq3iszm4hiLRFQ80CCuoT2B-gzGzoHsz',
+      appKey: 'E2tu5GKsWgzxBtHDe0SXDcYC',
+      avatar: 'monsterid',
+      serverURLs: '',
+      emojiMaps: "",
+      path: window.location.pathname,
+      visitor: false
+    }, null))
+  }
+
+  if (typeof Valine === 'function') initValine() 
+  else getScript('https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js').then(initValine)
+}
+
+if ('Valine' === 'Valine' || !true) {
+  if (true) btf.loadComment(document.getElementById('vcomment'),loadValine)
+  else setTimeout(loadValine, 0)
+} else {
+  function loadOtherComment () {
+    loadValine()
+  }
+}</script></div><script src="/js/jquery.js"></script><script src="/js/foot.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div class="no-result" id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>
