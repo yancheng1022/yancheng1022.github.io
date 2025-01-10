@@ -3,7 +3,7 @@
 ## Source: https://github.com/hexojs/hexo/
 
 # Site
-title: GuoYancheng
+title: 去码头整些薯条
 subtitle: ''
 description: ''
 keywords:
@@ -13,7 +13,7 @@ timezone: Asia/Shanghai
 
 # URL
 ## Set your site url here. For example, if you use GitHub Page, set url as 'https://username.github.io/project'
-url: https://www.guoyancheng.com/
+url: https://www.guoyancheng.top/
 permalink: posts/:abbrlink.html
 permalink_defaults:
 pretty_urls:
@@ -109,5 +109,4 @@ theme: butterfly
 deploy:
   type: 'git'
   repo: 
-    github: git@github.com:yancheng1022/.github.io.git,master
-    coding: git@e.coding.net:g-gvzw1554/guoyancheng/blog.git,master
+    github: git@github.com:yancheng1022/.github.io.git,master   

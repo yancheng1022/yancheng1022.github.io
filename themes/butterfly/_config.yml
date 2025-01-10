@@ -14,9 +14,9 @@ menu:
   Tags: /tags/ || fas fa-tags
   分类: /categories/ || fas fa-folder-open
   # List||fas fa-list:
-  #   Music: /music/ || fas fa-music
+  # Music: /music/ || fas fa-music
   #   Movie: /movies/ || fas fa-video
-  # 友链: /link/ || fas fa-link
+  友链: /link/ || fas fa-link
   关于: /about/ || fas fa-heart
 
 # Code Blocks (代碼相關)
@@ -269,9 +269,9 @@ aside:
 # busuanzi count for PV / UV in site
 # 訪問人數
 busuanzi:
-  site_uv: true
-  site_pv: true
-  page_pv: true
+  site_uv: false
+  site_pv: false
+  page_pv: false
 
 # Time difference between publish date and now (網頁運行時間)
 # Formal: Month/Day/Year Time or Year/Month/Day Time
@@ -451,7 +451,7 @@ valine:
   avatar: monsterid # gravatar style https://valine.js.org/#/avatar
   serverURLs: # This configuration is suitable for domestic custom domain name users, overseas version will be automatically detected (no need to manually fill in)
   bg: # valine background
-  visitor: false
+  visitor: true
   option:
 
 # waline - A simple comment system with backend support fork from Valine
@@ -641,10 +641,10 @@ tag_ui: # 留空或 index
 # Website Background (設置網站背景)
 # can set it to color or image (可設置圖片 或者 顔色)
 # The formal of image: url(http://xxxxxx.com/xxx.jpg)
-background: '#f0f0f0'
+background: url(/img/background.jpg)
 
 # Footer Background
-footer_bg: '#f0f0f0'
+footer_bg: false
 
 # Add mask to header or footer (为 header 或 footer 添加黑色半透遮罩)
 mask:

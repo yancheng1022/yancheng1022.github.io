@@ -1,0 +1,10 @@
+- class_name: 友情链接
+  link_list:
+    - name: Song`s Blog
+      link: https://songxwn.com/
+      avatar: https://songxwn.com/images/favicon.png
+      descr: 个人技术博客
+
+
+
+
