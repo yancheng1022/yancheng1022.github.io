@@ -1,0 +1,332 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Linux运维笔记 | 去码头整些薯条</title><meta name="author" content="Yancheng Guo"><meta name="copyright" content="Yancheng Guo"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="referrer" content="no-referrer"><meta name="description" content="1、Linux终端1.1、终端组成部分[root@localhost ~]# 1、root：表示当前终端登录的用户名2、@：表示在3、localhost：当前登录的主机名4、~：当前终端的工作目录5、#：表示身份标识符 1.2、Linux关机命令1、shoutdown -h now：正常关机2、halt：关闭内存3、init 0：关机，和shoutdon -h一样。只不过shutdown可以通过">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux运维笔记">
+<meta property="og:url" content="https://www.guoyancheng.top/posts/58660.html">
+<meta property="og:site_name" content="去码头整些薯条">
+<meta property="og:description" content="1、Linux终端1.1、终端组成部分[root@localhost ~]# 1、root：表示当前终端登录的用户名2、@：表示在3、localhost：当前登录的主机名4、~：当前终端的工作目录5、#：表示身份标识符 1.2、Linux关机命令1、shoutdown -h now：正常关机2、halt：关闭内存3、init 0：关机，和shoutdon -h一样。只不过shutdown可以通过">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://www.guoyancheng.top/img/avatar.jpg">
+<meta property="article:published_time" content="2023-06-14T16:00:00.000Z">
+<meta property="article:modified_time" content="2025-01-10T02:37:42.888Z">
+<meta property="article:author" content="Yancheng Guo">
+<meta property="article:tag" content="编程基础">
+<meta property="article:tag" content="运维">
+<meta property="article:tag" content="linux">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://www.guoyancheng.top/img/avatar.jpg"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://www.guoyancheng.top/posts/58660.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><meta name="baidu-site-verification" content="&lt;meta name=&quot;baidu-site-verification&quot; content=&quot;codeva-w6PavDHB8h&quot; /&gt;"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"找不到您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":false,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Linux运维笔记',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2025-01-10 10:37:42'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+    win.getCSS = (url,id = false) => new Promise((resolve, reject) => {
+      const link = document.createElement('link')
+      link.rel = 'stylesheet'
+      link.href = url
+      if (id) link.id = id
+      link.onerror = reject
+      link.onload = link.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        link.onload = link.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(link)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><link rel="stylesheet" href="/css/custom.css" media="defer" onload="this.media='all'"><meta name="generator" content="Hexo 6.3.0"></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/avatar.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">36</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">58</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">2</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="not-top-img" id="page-header"><nav id="nav"><span id="blog-info"><a href="/" title="去码头整些薯条"><span class="site-name">去码头整些薯条</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav></header><main class="layout" id="content-inner"><div id="post"><div id="post-info"><h1 class="post-title">Linux运维笔记</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2023-06-14T16:00:00.000Z" title="发表于 2023-06-15 00:00:00">2023-06-15</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-01-10T02:37:42.888Z" title="更新于 2025-01-10 10:37:42">2025-01-10</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/coding/">coding</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">3k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>10分钟</span></span></div></div></div><article class="post-content" id="article-container"><h1 id="1、Linux终端"><a href="#1、Linux终端" class="headerlink" title="1、Linux终端"></a>1、Linux终端</h1><h2 id="1-1、终端组成部分"><a href="#1-1、终端组成部分" class="headerlink" title="1.1、终端组成部分"></a>1.1、终端组成部分</h2><p>[root@localhost ~]#</p>
+<p>1、root：表示当前终端登录的用户名<br>2、@：表示在<br>3、localhost：当前登录的主机名<br>4、~：当前终端的工作目录<br>5、#：表示身份标识符</p>
+<h2 id="1-2、Linux关机命令"><a href="#1-2、Linux关机命令" class="headerlink" title="1.2、Linux关机命令"></a>1.2、Linux关机命令</h2><p>1、shoutdown -h now：正常关机<br>2、halt：关闭内存<br>3、init 0：关机，和shoutdon -h一样。只不过shutdown可以通过 -r now重启</p>
+<h1 id="2、Linux系统与文件"><a href="#2、Linux系统与文件" class="headerlink" title="2、Linux系统与文件"></a>2、Linux系统与文件</h1><h2 id="2-1、Linux文件系统"><a href="#2-1、Linux文件系统" class="headerlink" title="2.1、Linux文件系统"></a>2.1、Linux文件系统</h2><p>在 Linux 系统中有一个重要的概念：一切都是文件</p>
+<p>&#x2F;bin： 存放二进制可执行文件(ls,cat,mkdir等)，常用命令一般都在这里<br>&#x2F;sbin: 存放二进制可执行文件，只有root才能访问。这里存放的是系统管理员使用的系统级别的管理命令和程序。如ifconfig等<br>&#x2F;etc： 存放系统管理和配置文件<br>&#x2F;home： 存放所有用户文件的根目录，是用户主目录的基点，比如用户user的主目录就是&#x2F;home&#x2F;user，可以用~user表示<br>&#x2F;usr ： （Unix System Resources）系统级的目录，可以理解为C:&#x2F;Windows&#x2F;<br>&#x2F;usr&#x2F;local：用户级的程序目录，可以理解为C:&#x2F;Progrem Files&#x2F;。用户自己编译的软件默认会安装到这个目录下<br>&#x2F;opt： &#x2F;opt目录用来安装附加软件包，是用户级的程序目录，可以理解为D:&#x2F;Software<br>&#x2F;dev： 用于存放设备文件（网卡，光驱，键盘等）<br>&#x2F;boot： 存放用于系统引导时使用的各种文件；<br>&#x2F;lib ： 存放着和系统运行相关的库文件<br>&#x2F;tmp： 用于存放各种临时文件，是公用的临时文件存储点<br>&#x2F;var： 存放程序&#x2F;系统的日志文件的目录</p>
+<h1 id="3、Linux的基本指令"><a href="#3、Linux的基本指令" class="headerlink" title="3、Linux的基本指令"></a>3、Linux的基本指令</h1><h2 id="3-1、基础指令"><a href="#3-1、基础指令" class="headerlink" title="3.1、基础指令"></a>3.1、基础指令</h2><p><strong>1、ls</strong></p>
+<p>ls:列出当前目录所有文件<br>ls 路径:列出指定路径下的文件<br>ls -l:详细列表形式展示 （简写ll）</p>
+<p><strong>2、pwd</strong></p>
+<p>pwd:打印当前工作路径</p>
+<p><strong>3、mkdir</strong></p>
+<p>mkdir 路径:创建目录<br>mkdir -p 路径:一次性创建多个不存在的目录<br>mkdir 路径1 路径2 路径3 …:一次性创建多个目录</p>
+<p><strong>4、touch</strong></p>
+<p>touch 文件路径:创建文件<br>touch 文件1 文件2:当前路径下创建多个文件</p>
+<p><strong>5、cp</strong></p>
+<p>cp 被复制的文档路径 文档被复制到的路径：复制一个文件<br>cp -r 被复制的文档路径 文档被复制到的路径：递归复制</p>
+<p><strong>6、mv</strong></p>
+<p>mv 需要移动的文档 需要保存的位置：移动文档到新的位置(可以用来重命名)</p>
+<p><strong>7、rm</strong></p>
+<p>rm 文件名:不带选项，需要频繁输入y或n<br>rm -f 文件名:强制删除，不提示是否删除<br>rm -r 文件名:递归删除<br>rm 部分名字 * : * 为通配符，删除某些字段开头的文件</p>
+<p><strong>8、输出重定向</strong>*</p>
+<p>正常执行的指令 &gt;&#x2F;&gt;&gt; 文件的输出路径:输出结果到指定的地方</p>
+<ul>
+<li><blockquote>
+<p>:覆盖输出，会覆盖掉原来文件的内容</p>
+</blockquote>
+</li>
+<li><blockquote>
+<blockquote>
+<p>:追加输出,在原始内容末尾继续添加</p>
+</blockquote>
+</blockquote>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">将<span class="built_in">ls</span>命令的结果输出到file.txt文件中</span></span><br><span class="line">ls &gt; file.txt</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">将grep命令的结果追加到file.txt文件末尾</span></span><br><span class="line">grep keyword file.txt &gt;&gt; result.txt</span><br></pre></td></tr></table></figure>
+
+<p><strong>9、cat</strong></p>
+<p>cat 文件的路径:cat有直接打开一个文件的功能<br>cat 待合并的文件路径1 待合并的文件路径2… &gt; 合并之后的文件路径:合并若干个文件并存到一个文件中，配合输出重定向使用</p>
+<h2 id="3-2、进阶指令"><a href="#3-2、进阶指令" class="headerlink" title="3.2、进阶指令"></a>3.2、进阶指令</h2><p><strong>1、df</strong></p>
+<p>查看磁盘空间</p>
+<p><strong>2、free</strong></p>
+<p>free -m：表示以Mb为单位查看剩余内存</p>
+<p><strong>3、head</strong></p>
+<p>head -n 文件路径:查看一个文件的前n行，默认n为10</p>
+<p><strong>4、tail</strong></p>
+<p>tail -n 文件路径:查看一个文件的最后的n行，默认n为10<br>tail -F 文件的路径:查看一个文件的动态变化</p>
+<p><strong>5、less</strong></p>
+<p>less 需要查看的文件路径:查看文件，以较少的内容进行输出，用辅助功键(空格翻页、上下键&#x2F;回车一行行查看、数字+空格指定行)能查看更多</p>
+<p><strong>6、wc</strong></p>
+<p>wc 选项 文件的路径:统计文件内容信息(行数、单词数、字节数)<br>wc -l:行数<br>wc -w:单词数<br>wc -c:字节数</p>
+<p><strong>7、date</strong></p>
+<p>date:表示操作时间日期(读取、设置)<br>date +%F:输出形式为yyyy-MM-dd<br>date +”%F %T”:引号表示年月日与时分秒成为一个整体，输出形式 yyyy-MM-dd HH:mm:ss<br>date -d “-1 day”:获取之前或者之后的某个时间(备份)</p>
+<p><strong>8、cal</strong></p>
+<p>cal:直接输出当前月份的日历<br>cal -3:输出上月、本月、下月的日历<br>cal -y 年份:输出整年的月份</p>
+<p>9、clear</p>
+<p>clear:清除终端中已经存在的命令和结果(信息)</p>
+<blockquote>
+<p>按下ctrl+L指令，也能达到同样的效果</p>
+</blockquote>
+<h2 id="3-3、高阶指令"><a href="#3-3、高阶指令" class="headerlink" title="3.3、高阶指令"></a>3.3、高阶指令</h2><p><strong>1、管道</strong></p>
+<p>在Linux中，管道（Pipe）是一种用于将一个进程的输出连接到另一个进程的输入的机制。它允许将多个命令组合在一起，以便它们可以协同工作并产生更复杂的结果。在命令行中，管道使用竖线符号（|）表示。它将一个命令的输出传递给下一个命令的输入。这样，第一个命令的输出成为第二个命令的输入，第二个命令的输出成为第三个命令的输入，依此类推。</p>
+<p><strong>2、hostname</strong></p>
+<p>hostname:输出完整主机名<br>hostname -f:输出当前主机名中的FQDN(全限定域名)</p>
+<p><strong>3、id</strong></p>
+<p>id:默认显示当前执行该命令的用户的基本信息<br>id 用户名:显示指定用户的基本信息</p>
+<p><strong>4、whoami</strong></p>
+<p>whoami:一般用于shell脚本，用于获取当前操作的用户名方便记录日志</p>
+<p><strong>5、ps</strong></p>
+<p>ps -ef:查看服务器的进程信息</p>
+<blockquote>
+<p>-e:等价于“-A”表示列出全部的进程<br> -f:显示全部的列(显示全字段)</p>
+</blockquote>
+<p>ps -ef|grep 进程名称:在ps的结果中过滤出想要查看的进程状态</p>
+<p><strong>6、top</strong></p>
+<p>top:查看服务器进程占用资源</p>
+<blockquote>
+<p>运行top的时候，可以按下快捷键:<br> M:表示将奖结果按照内存(MEM)从高到低进行降序排序<br> P:表示将结果按照CPU的使用率从高到低进行降序排序<br> 1:当服务器拥有多个CPU的时候可以使用“1”快捷键来切换是否显示各个CPU的详细情信息</p>
+</blockquote>
+<p><strong>7、du</strong></p>
+<p>du -sh 目录路径:查看目录的真实大小<br>-s:summaries，只显示汇总的大小<br>-h:以高可读的形式显示</p>
+<p><strong>8、find</strong></p>
+<p>find 路径范围 选项 选项的值:用于查找文件</p>
+<p>选项:<br>-name:按照文档名称进行搜索<br>-type:按照文档的类型进行搜索<br>文档类型:“-”表示文件(用“f”来代替)，“d”表示文件夹</p>
+<p><strong>9、service</strong></p>
+<p>service 服务名 start&#x2F;stop&#x2F;restart:用于控制一些软件的服务启动&#x2F;停止&#x2F;重启</p>
+<p><strong>10、kill</strong></p>
+<p>kill 进程PID:杀死进程<br>kill all 进程名称:与kill相似</p>
+<p><strong>11、ifconfig</strong></p>
+<p>ifconfig:获取网卡信息<br>inet addr就是网卡的IP地址</p>
+<p><strong>12、reboot</strong></p>
+<p>reboot:重新启动计算机<br>reboot -w:模拟重启(实际不重启)</p>
+<p><strong>13、shutdown</strong></p>
+<p>shutdown -h now “关机提示”或者shutdown -h 指定时间 “关机提示”:关机</p>
+<p>取消关机:<br>centos7.x之前的版本:Ctrl+c<br>centos7.x之后的版本 shutdown -c</p>
+<p><strong>14、uptime</strong></p>
+<p>uptime:输出计算机从开机到现在的时间</p>
+<p><strong>15、uname</strong></p>
+<p>uname:获取操作系统的类型<br>uname -a:获取全部的系统信息(类型、全部主机名、内核版本、发布时间、开源计划)</p>
+<p><strong>16、netstat</strong></p>
+<p>netstat -tnlp:查看网络的连接状态</p>
+<blockquote>
+<p>-a (all)显示所有选项，默认不显示LISTEN相关<br>-t (tcp)仅显示tcp相关选项<br> -u (udp)仅显示udp相关选项<br> -n 拒绝显示别名，能显示数字的全部转化成数字。<br> -l 仅列出有在 Listen (监听) 的服务状态<br> -p 显示建立相关链接的程序名</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看服务</span></span><br><span class="line">netstat -antp | grep ssh</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看端口</span></span><br><span class="line">netstat -antp | grep 22</span><br></pre></td></tr></table></figure>
+
+<p><strong>17、man</strong></p>
+<p>man 命令:手册</p>
+<h1 id="4、Linux权限管理"><a href="#4、Linux权限管理" class="headerlink" title="4、Linux权限管理"></a>4、Linux权限管理</h1><p>Linux系统一般将文件可存&#x2F;取访问的身份分为3个类别:owner、group、others，且3种身份各有read、write、execute等权限。</p>
+<h2 id="4-1、权限介绍"><a href="#4-1、权限介绍" class="headerlink" title="4.1、权限介绍"></a>4.1、权限介绍</h2><p>查看文件ll：</p>
+<p>drwxr-x—</p>
+<blockquote>
+<p>r:可读  w：可写  e：可执行  -：没有对应的权限</p>
+</blockquote>
+<p>十位字符表示的含义：</p>
+<p>第1位：表示文档类型，常见的值有 d：表示文件夹，-：表示文件，l表示软连接，s表示套接字等等<br>第2-4位：表示文档所有者的权限情况。<br>第5-7位：表示与所有者同在一个组的用户的权限情况<br>第8-10位：表示其它用户的权限情况</p>
+<h2 id="4-2、权限设置"><a href="#4-2、权限设置" class="headerlink" title="4.2、权限设置"></a>4.2、权限设置</h2><p>语法：chmod [对谁操作] [操作符] [赋予的权限] 文件名</p>
+<p>操作对象：u：所有者  g：所属的用户组   o：其他用户other  a：所有用户all</p>
+<p>操作符：+ 添加权限   -  减少权限    &#x3D;直接给定一个权限</p>
+<p>十进制数字表示：r：4   w：2   x：1</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">取消所有者写权限</span></span><br><span class="line">chmod u-w 1.txt</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">设置所有者读写执行权限，所属组读和执行权限，其它没有任何权限</span></span><br><span class="line">chmod 750 1.txt</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">设置所有用户读写执行权限</span></span><br><span class="line">chmod a=rwx 1.txt</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="4-3、属主与属组设置"><a href="#4-3、属主与属组设置" class="headerlink" title="4.3、属主与属组设置"></a>4.3、属主与属组设置</h2><p>chown -R username 文档路径:更改文档的所属用户<br>chgrp -R groupname 文档的路径:更改文档所属的用户组<br>chown -R username:groupname 文档路径:更改所属的用户以及用户组</p>
+<h1 id="5、vi编辑器"><a href="#5、vi编辑器" class="headerlink" title="5、vi编辑器"></a>5、vi编辑器</h1><h2 id="5-1、命令模式"><a href="#5-1、命令模式" class="headerlink" title="5.1、命令模式"></a>5.1、命令模式</h2><p>在该模式下不能对文件直接编辑，可以输入快捷键进行一些操作（删除行，复制行，移动光标，粘贴等）（打开文件后默认进入的模式）</p>
+<p>1、光标移动<br>移动到行首：^<br>移动到行尾：$<br>移动到首行：gg<br>移动到末行：G<br>翻屏：PageUp&#x2F;PageDown</p>
+<p>2、复制粘贴<br>复制光标所在行：yy<br>向下复制指定行数：数字yy<br>粘贴：p<br>剪切&#x2F;删除所在行：dd<br>向下剪切&#x2F;删除指定行：数字dd</p>
+<h2 id="5-2、编辑模式"><a href="#5-2、编辑模式" class="headerlink" title="5.2、编辑模式"></a>5.2、编辑模式</h2><p>编辑模式：在该模式下对文件内容进行编辑</p>
+<p>进入：<br>a：光标前插入<br>i：光标后插入</p>
+<p>退出：<br>按下esc</p>
+<h2 id="5-3、末行模式"><a href="#5-3、末行模式" class="headerlink" title="5.3、末行模式"></a>5.3、末行模式</h2><p>末行模式：可以在末行输入命令来对文件进行操作</p>
+<p>保存：w<br>另存为：w + 路径<br>退出：q<br>保存并退出：wq<br>强制退出但不保存：q!<br>搜索：输入&#x2F; + 关键字，通过按键选择上一个（N）下一个（n）<br>替换光标所在行第一处符合条件的内容：s&#x2F;搜索的关键词&#x2F;新的内容<br>替换光标所在行所有符合条件的内容：s&#x2F;搜索的关键词&#x2F;新的内容&#x2F;g<br>替换整个文档每行第一个符合条件的内容：%s&#x2F;搜索的内容&#x2F;新的内容<br>替换整个文档符合条件的内容：%s&#x2F;搜索的关键词&#x2F;新的内容&#x2F;g</p>
+<blockquote>
+<p>%表示整个文件<br> g表示全局</p>
+</blockquote>
+<p>显示行号：set nu<br>取消显示行号：set nonu</p>
+<h2 id="5-4、三种模式之间的切换"><a href="#5-4、三种模式之间的切换" class="headerlink" title="5.4、三种模式之间的切换"></a>5.4、三种模式之间的切换</h2><p><img src="https://yancey-note-img.oss-cn-beijing.aliyuncs.com/202403161704451.png" alt="image.png"></p>
+<h1 id="6、防火墙服务"><a href="#6、防火墙服务" class="headerlink" title="6、防火墙服务"></a>6、防火墙服务</h1><h2 id="6-1、常用命令"><a href="#6-1、常用命令" class="headerlink" title="6.1、常用命令"></a>6.1、常用命令</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看防火墙状态</span></span><br><span class="line">systemctl status firewalld</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">开启防火墙</span></span><br><span class="line">systemctl start firewalld</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看所有开启的端口（启动防火墙后，默认没有开启任何端口，需要手动开启端口）</span></span><br><span class="line">firewall-cmd --list-ports</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">防火墙开启端口访问（--permanent 永久生效，没有此参数重启后失效）</span></span><br><span class="line">firewall-cmd --zone=public --add-port=80/tcp --permanent</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">重启防火墙</span></span><br><span class="line">firewall-cmd --reload</span><br></pre></td></tr></table></figure>
+
+
+
+
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="https://www.guoyancheng.top">Yancheng Guo</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="https://www.guoyancheng.top/posts/58660.html">https://www.guoyancheng.top/posts/58660.html</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://www.guoyancheng.top" target="_blank">去码头整些薯条</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E7%BC%96%E7%A8%8B%E5%9F%BA%E7%A1%80/">编程基础</a><a class="post-meta__tags" href="/tags/%E8%BF%90%E7%BB%B4/">运维</a><a class="post-meta__tags" href="/tags/linux/">linux</a></div><div class="post_share"><div class="social-share" data-image="/img/avatar.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/posts/60552.html" title="快乐源泉"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">快乐源泉</div></div></a></div><div class="next-post pull-right"><a href="/posts/46453.html" title="Redisson 框架中的分布式锁"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">Redisson 框架中的分布式锁</div></div></a></div></nav><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div class="vcomment" id="vcomment"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content is-expand"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#1%E3%80%81Linux%E7%BB%88%E7%AB%AF"><span class="toc-text">1、Linux终端</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-1%E3%80%81%E7%BB%88%E7%AB%AF%E7%BB%84%E6%88%90%E9%83%A8%E5%88%86"><span class="toc-text">1.1、终端组成部分</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-2%E3%80%81Linux%E5%85%B3%E6%9C%BA%E5%91%BD%E4%BB%A4"><span class="toc-text">1.2、Linux关机命令</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2%E3%80%81Linux%E7%B3%BB%E7%BB%9F%E4%B8%8E%E6%96%87%E4%BB%B6"><span class="toc-text">2、Linux系统与文件</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#2-1%E3%80%81Linux%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F"><span class="toc-text">2.1、Linux文件系统</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#3%E3%80%81Linux%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%8C%87%E4%BB%A4"><span class="toc-text">3、Linux的基本指令</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#3-1%E3%80%81%E5%9F%BA%E7%A1%80%E6%8C%87%E4%BB%A4"><span class="toc-text">3.1、基础指令</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-2%E3%80%81%E8%BF%9B%E9%98%B6%E6%8C%87%E4%BB%A4"><span class="toc-text">3.2、进阶指令</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-3%E3%80%81%E9%AB%98%E9%98%B6%E6%8C%87%E4%BB%A4"><span class="toc-text">3.3、高阶指令</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#4%E3%80%81Linux%E6%9D%83%E9%99%90%E7%AE%A1%E7%90%86"><span class="toc-text">4、Linux权限管理</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#4-1%E3%80%81%E6%9D%83%E9%99%90%E4%BB%8B%E7%BB%8D"><span class="toc-text">4.1、权限介绍</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-2%E3%80%81%E6%9D%83%E9%99%90%E8%AE%BE%E7%BD%AE"><span class="toc-text">4.2、权限设置</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-3%E3%80%81%E5%B1%9E%E4%B8%BB%E4%B8%8E%E5%B1%9E%E7%BB%84%E8%AE%BE%E7%BD%AE"><span class="toc-text">4.3、属主与属组设置</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#5%E3%80%81vi%E7%BC%96%E8%BE%91%E5%99%A8"><span class="toc-text">5、vi编辑器</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#5-1%E3%80%81%E5%91%BD%E4%BB%A4%E6%A8%A1%E5%BC%8F"><span class="toc-text">5.1、命令模式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-2%E3%80%81%E7%BC%96%E8%BE%91%E6%A8%A1%E5%BC%8F"><span class="toc-text">5.2、编辑模式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-3%E3%80%81%E6%9C%AB%E8%A1%8C%E6%A8%A1%E5%BC%8F"><span class="toc-text">5.3、末行模式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-4%E3%80%81%E4%B8%89%E7%A7%8D%E6%A8%A1%E5%BC%8F%E4%B9%8B%E9%97%B4%E7%9A%84%E5%88%87%E6%8D%A2"><span class="toc-text">5.4、三种模式之间的切换</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#6%E3%80%81%E9%98%B2%E7%81%AB%E5%A2%99%E6%9C%8D%E5%8A%A1"><span class="toc-text">6、防火墙服务</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#6-1%E3%80%81%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4"><span class="toc-text">6.1、常用命令</span></a></li></ol></li></ol></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2025 By Yancheng Guo</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"><script>function loadValine () {
+  function initValine () {
+    const valine = new Valine(Object.assign({
+      el: '#vcomment',
+      appId: 'OEq3iszm4hiLRFQ80CCuoT2B-gzGzoHsz',
+      appKey: 'E2tu5GKsWgzxBtHDe0SXDcYC',
+      avatar: 'monsterid',
+      serverURLs: '',
+      emojiMaps: "",
+      path: window.location.pathname,
+      visitor: true
+    }, null))
+  }
+
+  if (typeof Valine === 'function') initValine() 
+  else getScript('https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js').then(initValine)
+}
+
+if ('Valine' === 'Valine' || !true) {
+  if (true) btf.loadComment(document.getElementById('vcomment'),loadValine)
+  else setTimeout(loadValine, 0)
+} else {
+  function loadOtherComment () {
+    loadValine()
+  }
+}</script></div><script src="/js/jquery.js"></script><script src="/js/foot.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div class="no-result" id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>
