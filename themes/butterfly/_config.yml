@@ -17,6 +17,7 @@ menu:
   # Music: /music/ || fas fa-music
   #   Movie: /movies/ || fas fa-video
   友链: /link/ || fas fa-link
+  相册: /gallery/ || fas fa-solid fa-image
   关于: /about/ || fas fa-heart
 
 # Code Blocks (代碼相關)
@@ -226,10 +227,10 @@ aside:
     tag: true
     category: true
   card_author:
-    enable: false
-    description:
+    enable: true
+    description: 人生不过三万天
     button:
-      enable: true
+      enable: false
       icon: fab fa-github
       text: Follow Me
       link: https://github.com/xxxxxx
@@ -641,7 +642,7 @@ tag_ui: # 留空或 index
 # Website Background (設置網站背景)
 # can set it to color or image (可設置圖片 或者 顔色)
 # The formal of image: url(http://xxxxxx.com/xxx.jpg)
-background: url(/img/background.jpg)
+background: url(https://yancey-note-img.oss-cn-beijing.aliyuncs.com/background.jpg)
 
 # Footer Background
 footer_bg: false

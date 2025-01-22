@@ -7,7 +7,7 @@ title: 去码头整些薯条
 subtitle: ''
 description: ''
 keywords:
-author: Yancheng Guo
+author: Guo Yancheng
 language: zh-CN
 timezone: Asia/Shanghai
 
@@ -109,4 +109,6 @@ theme: butterfly
 deploy:
   type: 'git'
   repo: 
-    github: git@github.com:yancheng1022/.github.io.git,master   
+    github: git@github.com:yancheng1022/.github.io.git,master
+
+baidu_site_verification: true    
